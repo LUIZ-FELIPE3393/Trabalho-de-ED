@@ -16,7 +16,7 @@ int main()
 {
     printf("Olá Mundo\n");
 
-    if (!abrirArquivo("registros.txt"))
+    if (!abrirArquivo("/registros.txt"))
     {
         return 0;
     }
