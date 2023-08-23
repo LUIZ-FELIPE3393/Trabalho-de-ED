@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #define MAX_BUFFER_SIZE 128
 
-FILE *arquivo = NULL;
+FILE *arquivo;
 
 // Funções Leitura de Arquivos (Declarar)
 bool abrirArquivo(const char *caminho);
@@ -15,8 +16,9 @@ int consulta(int id);
 int main()
 {
     printf("Olá Mundo\n");
+    printf("Olá Mundo\n");
 
-    if (!abrirArquivo("/registros.txt"))
+    if (!abrirArquivo("registros.txt"))
     {
         return 0;
     }
@@ -31,11 +33,12 @@ int main()
 // Funções Leitura de Arquivos (Implementar)
 bool abrirArquivo(const char *caminho)
 {
-    if ((arquivo = fopen(caminho, "r")) == NULL)
+    if ((arquivo = fopen(caminho, "r+")) == NULL)
     {
-        printf("Não foi possível abrir o arquivo \"%s\" \n", caminho);
+        fprintf(stderr, "Não foi possível abrir o arquivo\n");
         return false;
     }
+    fprintf(arquivo, "Foi criado!\n");
 
     return true;
 }
