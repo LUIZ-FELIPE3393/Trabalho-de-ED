@@ -1,9 +1,1 @@
-func 0
-{
-	"nome": "João";
-}
-
-func 1
-{
-	"nome": "Maria";
-}
+I1P("João", 32, "MEDI")
