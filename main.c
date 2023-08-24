@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <locale.h>
 #define MAX_BUFFER_SIZE 128
 
 FILE* arquivo = NULL;
@@ -8,16 +9,31 @@ FILE* arquivo = NULL;
 bool abrirArquivo(const char* caminho);
 int consulta(int id);
 
+//Funções Escrita de Arquivos (Declarar)
+void registrarPessoa(); // FUNCAO TESTE
+
+//Enumerações
+typedef enum { PADEIRO, MEDICO, DENTISTA, SAPATEIRO } Profissao; // ENUM TESTE
+
 //Registros (Estruturas)
+struct Pessoa  // REGISTRO TESTE
+{
+    /* data */
+    int idade;
+    char nome[32];
+    Profissao prof;
+};
+
 
 //Funções (Features do programa)
 
 
 int main()
 {
+    setlocale(LC_ALL, "Portuguese");
     printf("Olá Mundo\n");
 
-    if (!abrirArquivo("registros2.txt"))
+    if (!abrirArquivo("registroOUT.txt"))
     {
         return -1;
     }
@@ -32,7 +48,7 @@ int main()
 //Funções Leitura de Arquivos (Implementar)
 bool abrirArquivo(const char* caminho)
 {
-    if((arquivo = fopen(caminho, "w")) == NULL)
+    if((arquivo = fopen(caminho, "r")) == NULL)
     {
         printf("Não foi possível abrir o arquivo \"%s\" \n", caminho);
         return false;
@@ -48,5 +64,4 @@ int consulta(int id)
     {
         printf("%c", c);
     }
-    return c;
 }
