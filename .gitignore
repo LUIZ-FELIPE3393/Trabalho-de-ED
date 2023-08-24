@@ -1,5 +1,8 @@
 # Esse arquivo serve para especificar quais arquivos não devem entrar no repositório
 
+*.pbd
+*.ilk
+
 # Prerequisites
 *.d
 

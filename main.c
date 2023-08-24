@@ -17,7 +17,7 @@ int main()
 {
     printf("Olá Mundo\n");
 
-    if (!abrirArquivo("registros.txt"))
+    if (!abrirArquivo("registros2.txt"))
     {
         return -1;
     }
@@ -32,7 +32,7 @@ int main()
 //Funções Leitura de Arquivos (Implementar)
 bool abrirArquivo(const char* caminho)
 {
-    if((arquivo = fopen(caminho, "r")) == NULL)
+    if((arquivo = fopen(caminho, "w")) == NULL)
     {
         printf("Não foi possível abrir o arquivo \"%s\" \n", caminho);
         return false;
