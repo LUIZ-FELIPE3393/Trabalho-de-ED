@@ -1,6 +1,6 @@
 # Esse arquivo serve para especificar quais arquivos não devem entrar no repositório
 
-*.pbd
+*.pdb
 *.ilk
 
 # Prerequisites
