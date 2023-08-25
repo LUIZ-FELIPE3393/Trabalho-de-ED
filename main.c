@@ -4,14 +4,11 @@
 #include <locale.h>
 #define MAX_FILE_SIZE 4096
 
+#define OUT_FORMAT_PESSOA "%d-P(%s, %d, %s)\n\0" // FORMATO PADRÃO PARA REGISTRO DE PESSOA /TESTE
+
 FILE* arquivo = NULL;
 char BUFFER [MAX_FILE_SIZE];
-
-//Funções Leitura de Arquivos (Declarar)
-bool abrirArquivo(const char* caminho);
-
-//Funções Escrita de Arquivos (Declarar)
-void registrarPessoa(); // FUNCAO TESTE
+int global_arquivo_index = 0;
 
 //Enumerações
 typedef enum { PR_NULL, PADEIRO, MEDICO, DENTISTA, SAPATEIRO } Profissao; // ENUM TESTE
@@ -26,16 +23,25 @@ typedef struct  // REGISTRO TESTE
     Profissao prof;
 } Pessoa;
 
-void lerRegistroPessoa(Pessoa* p, int id); 
-
-
 //Funções (Features do programa)
+//Funções Leitura de Arquivos (Declarar)
+bool abrirArquivo(const char* caminho);
+void lerRegistroPessoa(Pessoa *p, int id);
 
+//Funções Escrita de Arquivos (Declarar)
+void registrarPessoa(Pessoa *p); // FUNCAO TESTE
 
 int main()
 {
     setlocale(LC_ALL, "");
-    printf("Ol� Mundo\n");
+    printf("Ol� Mundo\n");
+
+	Pessoa p0 =
+	{
+		56,
+		"Paulo",
+		SAPATEIRO
+	}; 
     
     Pessoa p1;
 
@@ -44,27 +50,29 @@ int main()
         return -1;
     }
 
-	lerRegistroPessoa(&p1, 1);
+	registrarPessoa(&p0);
+	//lerRegistroPessoa(&p1, 0);
 	
-	printf("X_NOME: %s\n", p1.nome);
-	printf("X_IDADE: %d\n", p1.idade);
-	printf("X_PROF: %d\n", p1.prof);
+	printf("X_NOME: %s\n", p0.nome);
+	printf("X_IDADE: %d\n", p0.idade);
+	printf("X_PROF: %d\n", p0.prof);
 
     return 0;
 }
 
+//Funções Features (Implementar)
 //Funções Leitura de Arquivos (Implementar)
 bool abrirArquivo(const char* caminho)
 {
-    if((arquivo = fopen(caminho, "r")) == NULL)
+    if((arquivo = fopen(caminho, "r+")) == NULL)
     {
-        printf("N�o foi poss�vel abrir o arquivo \"%s\" \n", caminho);
+        printf("Não foi possível abrir o arquivo \"%s\" \n", caminho);
         return false;
     }
 
     return true;
-    
 }
+
 
 Profissao retornaProfPorNome(const char* nome_prof)
 {
@@ -123,7 +131,7 @@ void lerRegistroPessoa(Pessoa* p, int id_registro)
 			}
 			else
 			{
-				// Verifica se � a id correta
+				// Verifica se � a id correta
 				id_atual = atoi(sub_BUFFER);
 				printf("id_atual:%d\n", id_atual);
 				if(id_atual == id_registro)	
@@ -142,7 +150,7 @@ void lerRegistroPessoa(Pessoa* p, int id_registro)
 				{
 					while (line_BUFFER[++i] != ')')
 					{
-						//Dentro do Par�nteses
+						//Dentro do Par�nteses
 						printf("Dentro\n");
 						ii = 0;
 						do
@@ -174,7 +182,7 @@ void lerRegistroPessoa(Pessoa* p, int id_registro)
 						while ((c = line_BUFFER[++i]) != ')') // Termina Leitura
 						{
 							printf("PROF: ");
-							//PROFISS�O
+							//PROFISS�O
 							if(!isspace(c))
 							{
 								sub_BUFFER[ii++] = c;
@@ -196,6 +204,35 @@ void lerRegistroPessoa(Pessoa* p, int id_registro)
 	printf("num_BUFFER:%s\n", sub_BUFFER);
     
     //printf("%s\n", BUFFER);
+}
+
+//Funções Escrita de Arquivos (Implementar)
+void registrarPessoa(Pessoa *p) // FUNCAO TESTE
+{
+    char* sigla_prof[5];
+
+    switch (p->prof)
+    {
+    case PADEIRO:
+        *sigla_prof = "PADE";
+        break;
+    case DENTISTA:
+        *sigla_prof = "DENT";
+        break;
+	case SAPATEIRO:
+        *sigla_prof = "SAPA";
+        break;
+	case MEDICO:
+        *sigla_prof = "MEDI";
+        break;
+    default:
+        *sigla_prof = "NULL";
+        break;
+    }
+    fseek(arquivo, 0, SEEK_END);
+    fprintf(arquivo, OUT_FORMAT_PESSOA, global_arquivo_index, p->nome, p->idade, *sigla_prof);
+    fseek(arquivo, 0, SEEK_SET);
+    global_arquivo_index++;
 }
 
 
