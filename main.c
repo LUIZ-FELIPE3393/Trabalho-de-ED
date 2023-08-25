@@ -15,11 +15,13 @@ void menuClientes ();
 void menuAtendimentos ();
 void menuProfissao (Profissao* profissao);
 void inserirProf(Profissao* profissao);
+void pesquisarProf(Profissao* profissao);
 
 int main(){
     Profissao profissao [variComProf];
 
     setlocale(LC_ALL,"");
+
     int op, a=0;
 
     do{
@@ -180,7 +182,7 @@ void menuProfissao (Profissao* profissao){
 
         switch(op){
         case 1:
-            //Função para pesquisar por profissão
+            pesquisarProf(profissao);
         break;
 
         case 2:
@@ -219,10 +221,10 @@ void inserirProf(Profissao* profissao){
         printf("\nInserir o sigla da profissão: ");
         scanf("%s", profissao[i].siglaProf);
 
-        profissao[i].codProf = 2023100+i;
+        profissao[i].codProf = 2023100+variComProf;
         printf("\nCódigo da profissão:%d", profissao[i].codProf);
 
-        printf("\n [0]Inserir outra profisssão\n [1]Voltar\n\n ");
+        printf("\n\n [0]Inserir outra profisssão\n [1]Voltar\n: ");
         scanf("%d", &op);
 
         if(op==0){
@@ -233,4 +235,31 @@ void inserirProf(Profissao* profissao){
             continue;
         }
     }
+}
+
+void pesquisarProf(Profissao* profissao){
+    int i, a=0;
+    char op[50], str[8];
+
+    do{
+        system("cls");
+        printf("-------------------------------------------------PESQUISA POR PROFISSÃO-------------------------------------------------");
+        printf("\nDigita algo para a pesquisa (Nome, Sigla ou Código da Profissão)\n:");
+        scanf("%s", op);
+        system("cls");
+
+        for(i=0; i<variComProf; i++){
+            //if(op==(((profissao[i].codProf)||profissao[i].nomeProf)||profissao[i].siglaProf)){
+            sprintf(str, "%d", profissao[i].codProf);
+            if(strcmp(op, profissao[i].nomeProf) == 0 || strcmp(op, str) == 0 || strcmp(op, profissao[i].siglaProf) == 0){
+                printf("\n Nome da profissão: %s", profissao[i].nomeProf);
+                printf("\n Sigla da profissão: %s", profissao[i].siglaProf);
+                printf("\n Código da profissão: %d", profissao[i].codProf);
+            }
+        }
+
+        printf("\n\n [0]Ver outra profisssão\n [1]Voltar\n: ");
+        scanf("%d", &a);
+
+    }while(a<1);
 }
