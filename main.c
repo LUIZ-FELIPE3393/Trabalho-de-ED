@@ -187,7 +187,6 @@ void menuProfissao (Profissao* profissao){
 
         case 2:
             inserirProf(profissao);
-            system("cls");
         break;
 
         case 3:
