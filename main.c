@@ -4,11 +4,30 @@
 #include <string.h>
 
 int variComProf=1; //variavel de comando da profissão
+int variComMed=1; //variavel de comando de medico
 
 typedef struct{
     int codProf;
     char nomeProf[50], siglaProf[10];
+//Registro das profissões
 }Profissao;
+
+typedef struct{
+    char cpf[11], nome[50], email[50], tipo[50];
+    int codProf, numRegP, fone, matricula, dia, mes, ano;
+//Registro dos Profissionais de saúde
+} Medico;
+
+typedef struct{
+    char nome[50], email[50];
+    int idade, fone, celular, dia, mes, ano;
+//Registro dos clientes
+}cliente;
+
+typedef struct{
+    int numero, matricula, dia, mes, ano;
+//Registro dos atendimentos
+}atendimento;
 
 void menuMedicos ();
 void menuClientes ();
@@ -16,10 +35,14 @@ void menuAtendimentos ();
 void menuProfissao (Profissao* profissao);
 void inserirProf(Profissao* profissao);
 void pesquisarProf(Profissao* profissao);
+void pesquisarMedico(Medico* medico);
+void inserirMedico(Medico* medico);
+void editarMedico(Medico* medico);
+void removerMedico(Medico* medico);
 
 int main(){
     Profissao profissao [variComProf];
-
+    Medico medico [variComMed];
     setlocale(LC_ALL,"");
 
     int op, a=0;
@@ -31,7 +54,7 @@ int main(){
 
         switch(op){
         case 1:
-            menuMedicos ();
+            menuMedicos (medico);
             system("cls");
         break;
 
@@ -64,7 +87,7 @@ int main(){
     return 0;
 }
 
-void menuMedicos (){
+void menuMedicos (Medico* medico){
     int op, a;
     do{
         system("cls");
@@ -78,7 +101,7 @@ void menuMedicos (){
         break;
 
         case 2:
-            //Função para inserir médico
+            inserirMedico(medico);
         break;
 
         case 3:
@@ -261,4 +284,28 @@ void pesquisarProf(Profissao* profissao){
         scanf("%d", &a);
 
     }while(a<1);
+}
+
+void inserirMedico(Medico* medico){
+    int i, op=1;
+
+    for(i=0; i<variComMed; i++){
+        system("cls");
+        printf("\n---------------------------------------------------AREA DE CADASTRO---------------------------------------------------\n");
+        printf("\nNome: ");
+        scanf("%s", medico[i].nome);
+
+
+
+        printf("\n\n[0]Novo Cadastro\n[1]Voltar\n");
+        scanf("%d", &op);
+
+        if(op==0) {
+            variComMed++;
+        }
+        else{
+            system("cls");
+            continue;
+        }
+    }
 }
