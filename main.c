@@ -35,6 +35,8 @@ void menuAtendimentos ();
 void menuProfissao (Profissao* profissao);
 void inserirProf(Profissao* profissao);
 void pesquisarProf(Profissao* profissao);
+void removerProf(Profissao* profissao);
+void editarProf(Profissao* profissao);
 void pesquisarMedico(Medico* medico);
 void inserirMedico(Medico* medico);
 void editarMedico(Medico* medico);
@@ -213,11 +215,11 @@ void menuProfissao (Profissao* profissao){
         break;
 
         case 3:
-            //Função para editar informações dos profissão
+            editarProf(profissao);
         break;
 
         case 4:
-            //Função para remover profissão
+           removerProf(profissao);
         break;
 
         case 5:
@@ -286,6 +288,74 @@ void pesquisarProf(Profissao* profissao){
     }while(a<1);
 }
 
+void removerProf(Profissao* profissao){
+    int i, a=0;
+    char op[50], str[8];
+
+    do{
+        system("cls");
+        printf("-------------------------------------------------PESQUISA POR PROFISSÃO-------------------------------------------------");
+        printf("\nDigita algo para a identificar a profissão que você deseja remover (Nome, Sigla ou Código da Profissão)\n:");
+        scanf("%s", op);
+        system("cls");
+
+        for(i=0; i<variComProf; i++){
+            sprintf(str, "%d", profissao[i].codProf);
+            if(strcmp(op, profissao[i].nomeProf) == 0 || strcmp(op, str) == 0 || strcmp(op, profissao[i].siglaProf) == 0){
+                memset(profissao[i].nomeProf, 0, sizeof(char[50]) );
+                memset(profissao[i].siglaProf, 0, sizeof(char[10]) );
+                profissao[i].codProf = 0;
+            }
+        }
+
+        printf("\n\n [0]Ver outra profisssão\n [1]Voltar\n: ");
+        scanf("%d", &a);
+
+    }while(a<1);
+}
+
+void editarProf(Profissao* profissao){
+   int i, a=0, b;
+    char op[50], str[8];
+
+    do{
+        system("cls");
+        printf("-------------------------------------------------EDITAR POR PROFISSÃO-------------------------------------------------");
+        printf("\nDigita algo para a identificar a profissão que você deseja editar (Nome, Sigla ou Código da Profissão)\n:");
+        scanf("%s", op);
+        system("cls");
+
+        for(i=0; i<variComProf; i++){
+            sprintf(str, "%d", profissao[i].codProf);
+            if(strcmp(op, profissao[i].nomeProf) == 0 || strcmp(op, str) == 0 || strcmp(op, profissao[i].siglaProf) == 0){
+                    printf("\nInforme qual dado você deseja alterar \n[1]Nome \n[2]Sigla\n:");
+                    scanf("%d", &b);
+
+                switch(b){
+                case 1:
+                    printf("Digite o novo nome da profissão:");
+                    scanf("%s", profissao[i].nomeProf);
+                    printf("Esse é o disciplina já alterado:%s", profissao[i].nomeProf);
+                break;
+                case 2:
+                    printf("Digite o novo nome da profissão:");
+                    scanf("%s", profissao[i].nomeProf);
+                    printf("Esse é o disciplina já alterado:%s", profissao[i].nomeProf);
+                break;
+                default:
+                    system("cls");
+                    continue;
+                }
+            }
+        }
+
+        printf("\n\n [0]Ver outra profisssão\n [1]Voltar\n: ");
+        scanf("%d", &a);
+
+    }while(a<1);
+}
+
+
 void inserirMedico(Medico* medico){
     int i, op=1;
 
@@ -309,3 +379,4 @@ void inserirMedico(Medico* medico){
         }
     }
 }
+
