@@ -338,9 +338,9 @@ void editarProf(Profissao* profissao){
                     printf("Esse é o disciplina já alterado:%s", profissao[i].nomeProf);
                 break;
                 case 2:
-                    printf("Digite o novo nome da profissão:");
+                    printf("Digite a nova sigla da profissão:");
                     scanf("%s", profissao[i].nomeProf);
-                    printf("Esse é o disciplina já alterado:%s", profissao[i].nomeProf);
+                    printf("Esse é a sigla já alterada:%s", profissao[i].siglaProf);
                 break;
                 default:
                     system("cls");
