@@ -36,26 +36,23 @@ int main()
     setlocale(LC_ALL, "");
     printf("Ol� Mundo\n");
 
-	Pessoa p0 =
-	{
-		56,
-		"Paulo",
-		SAPATEIRO
-	}; 
-    
-    Pessoa p1;
+	Pessoa p0, p1;
 
     if (!abrirArquivo("registroOUT.txt"))
     {
         return -1;
     }
 
-	registrarPessoa(&p0);
-	//lerRegistroPessoa(&p1, 0);
+	lerRegistroPessoa(&p0, 0);
+	lerRegistroPessoa(&p1, 1);
 	
 	printf("X_NOME: %s\n", p0.nome);
 	printf("X_IDADE: %d\n", p0.idade);
 	printf("X_PROF: %d\n", p0.prof);
+	
+	printf("X_NOME: %s\n", p1.nome);
+	printf("X_IDADE: %d\n", p1.idade);
+	printf("X_PROF: %d\n", p1.prof);
 
     return 0;
 }
@@ -119,32 +116,42 @@ void lerRegistroPessoa(Pessoa* p, int id_registro)
 			line_BUFFER[i] = '\0';
 		}
 	    
-	    printf("sub_BUFFER:%s\n", line_BUFFER);
+	    //printf("sub_BUFFER:%s\n", line_BUFFER);
+	    //printf("c:%c\n", c);
 	    
 	    if(!linha_completa)
 	    	continue;
+		printf("linhaCompleta\n");
 	    i = 0;
-	    if (isdigit(c)) // Converte id do registro para inteiro
-	    	{
-	    		sub_BUFFER[ii++] = c;
-				printf("c:%c\n", c);	
+	    printf("SUB:%s\n", sub_BUFFER);
+	    memset(sub_BUFFER, 0, sizeof(sub_BUFFER));
+	    
+	    int j = 0;
+	    while ((c = line_BUFFER[j++] )!= '-')
+	    {
+	    	if (isdigit(c)) // Converte id do registro para inteiro
+    		{
+				printf("SUB:%s", sub_BUFFER);
+    			sub_BUFFER[ii++] = c;
+				//printf("c:%c\n", c);	
 			}
-			else
-			{
-				// Verifica se � a id correta
-				id_atual = atoi(sub_BUFFER);
-				printf("id_atual:%d\n", id_atual);
-				if(id_atual == id_registro)	
-				{
-					printf("id_atual:%d == id:%d\n", id_atual, id_registro);
-					lerRegistro = true;
-				}
-			}	
+		}
+		// Verifica se � a id correta
+		id_atual = atoi(sub_BUFFER);
+		printf("id_atual:%d\n", id_atual);
+		if(id_atual == id_registro)	
+		{
+			printf("id_atual:%d == id:%d\n", id_atual, id_registro);
+			lerRegistro = true;
+		}
+
 	    //Leitura de Registro
+	    if (lerRegistro)
 	    while ((c = line_BUFFER[i++] )!= '\0') 
 	    {
 			if (lerRegistro)
 			{
+				//printf("c:%c\n", c);
 				printf("LerRegistro\n");
 				if (line_BUFFER[i] == '(')
 				{
@@ -161,7 +168,7 @@ void lerRegistroPessoa(Pessoa* p, int id_registro)
 						} while (line_BUFFER[i] != ',');
 						
 						p->nome[ii] = '\0';
-						printf("NOME: %s\n", p->nome);
+						//printf("NOME: %s\n", p->nome);
 						memset(sub_BUFFER, 0, sizeof(sub_BUFFER));
 						
 						ii = 0;
@@ -171,28 +178,26 @@ void lerRegistroPessoa(Pessoa* p, int id_registro)
 							if (isdigit(c))
 						   	{
 						   		sub_BUFFER[ii++] = c;
-								printf("c:%c\n", c);	
+								//printf("c:%c\n", c);	
 							}
 						}
 						
-						printf("idade BUFFER:%s\n", sub_BUFFER);
+						//printf("idade BUFFER:%s\n", sub_BUFFER);
 						p->idade = atoi(sub_BUFFER);
 						
 						ii = 0;
 						while ((c = line_BUFFER[++i]) != ')') // Termina Leitura
 						{
-							printf("PROF: ");
 							//PROFISS�O
 							if(!isspace(c))
 							{
 								sub_BUFFER[ii++] = c;
 							}
-							
-							printf("sub_buffer i:%c\n", line_BUFFER[i]);
 						}
 						
 						p->prof = retornaProfPorNome(sub_BUFFER);
 						lerRegistro = false;
+						linha_completa = false;
 						return;
 					}
 				}
@@ -202,7 +207,7 @@ void lerRegistroPessoa(Pessoa* p, int id_registro)
 	}
 	
 	printf("num_BUFFER:%s\n", sub_BUFFER);
-    
+    memset(sub_BUFFER, 0, sizeof(sub_BUFFER));
     //printf("%s\n", BUFFER);
 }
 
