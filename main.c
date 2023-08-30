@@ -8,7 +8,8 @@
 
 int variComProfissao=1; //variavel de comando da profiss�o
 int variComProfissional=1; //variavel de comando de medico
-int global_arquivo_index = 0;
+int arquivo_index_escrita = 0;
+//int arquivo_index_leitura = 0;
 
 FILE* arquivo_profissao = NULL;
 
@@ -39,6 +40,7 @@ typedef struct{
 //Funções Leitura de Arquivos
 int abrirArquivo(FILE** arquivo, const char* caminho);
 int lerRegistroProfissao(Profissao *p, long* pos);
+void alocarRegistrosProfissao(Profissao* p);
 
 //Funções Escrita de Arquivos
 void registrarProfissao(Profissao *p); // FUNCAO
@@ -107,7 +109,7 @@ int main(){
         }
     }while(a<1);
 
-
+    system("pause");
     return 0;
 }
 
@@ -434,10 +436,8 @@ int abrirArquivo(FILE** arquivo, const char* caminho)
 void alocarRegistrosProfissao(Profissao* p)
 {
     long pos = 0;
-
-
-
-    while (lerRegistroProfissao(p, &pos) > 0)
+    printf("Alocar Registro Profissao\n");
+    while (lerRegistroProfissao(p, &pos) != 1)
     {printf("A\n");}
 }
 
@@ -445,12 +445,12 @@ int lerRegistroProfissao(Profissao* p, long* pos)
 {
 	char line_BUFFER[128], sub_BUFFER[16];
     char c;
-    int lerRegistro, linha_completa; //bool
+    int lerRegistro = 0, linha_completa = 0; //bool
     int i = 0, ii = 0;
     int id_atual = 0;
 
     //Leitura de Arquivo
-    fseek(arquivo_profissao, (*pos), SEEK_SET);
+    fseek(arquivo_profissao, 0, SEEK_SET);
     printf("FORA\n");
     while ((c = fgetc(arquivo_profissao)) != EOF)
     {
@@ -465,9 +465,6 @@ int lerRegistroProfissao(Profissao* p, long* pos)
 			line_BUFFER[i] = '\0';
 		}
 
-	    //printf("sub_BUFFER:%s\n", line_BUFFER);
-	    printf("pos: %d c:%c\n", *pos, c);
-
 	    if(!linha_completa)
         {
             continue;
@@ -479,9 +476,10 @@ int lerRegistroProfissao(Profissao* p, long* pos)
 	    memset(sub_BUFFER, 0, sizeof(sub_BUFFER));
 
 	    int j = 0;
+        printf("isDigit: %c\n", line_BUFFER[j]);
 	    while ((c = line_BUFFER[j++] )!= '-')
 	    {
-	    	if (isdigit(c)) // Converte id do registro para inteiro
+	    	if (c >= '0' && c <= '9') // Converte id do registro para inteiro
     		{
 				//printf("SUB:%s", sub_BUFFER);
     			sub_BUFFER[ii++] = c;
@@ -490,7 +488,7 @@ int lerRegistroProfissao(Profissao* p, long* pos)
 		}
 		// Verifica se � a id correta
 		id_atual = atoi(sub_BUFFER);
-		//printf("id_atual:%d\n", id_atual);
+        arquivo_index_escrita = id_atual+1;
 		lerRegistro = 1;
 
 	    //Leitura de Registro
@@ -553,8 +551,7 @@ int lerRegistroProfissao(Profissao* p, long* pos)
 				}
 			}
 		}
-		memset(line_BUFFER, 0, sizeof(line_BUFFER));
-
+        memset(line_BUFFER, 0, sizeof(line_BUFFER));
 	}
 
 	printf("num_BUFFER:%s\n", sub_BUFFER);
@@ -567,7 +564,7 @@ int lerRegistroProfissao(Profissao* p, long* pos)
 void registrarProfissao(Profissao *p) // FUNCAO TESTE
 {
     fseek(arquivo_profissao, 0, SEEK_END);
-    fprintf(arquivo_profissao, OUT_FORMAT_PROFISSAO, global_arquivo_index, p->codProf, p->nomeProf, p->siglaProf );
+    fprintf(arquivo_profissao, OUT_FORMAT_PROFISSAO, arquivo_index_escrita, p->codProf, p->nomeProf, p->siglaProf );
     fseek(arquivo_profissao, 0, SEEK_SET);
-    global_arquivo_index++;
+    arquivo_index_escrita++;
 }
