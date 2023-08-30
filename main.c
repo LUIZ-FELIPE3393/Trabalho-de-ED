@@ -415,7 +415,7 @@ void inserirMedico(Medico* medico){
         for(i=0; i<variComAten; i++){
             if(op==atendimento[i].matAten||op==atendimento[i].numero){
                 printf("\n Data do atendimento: %d/%d/%d", atendimento[i].dataAten.dia, atendimento[i].dataAten.mes, atendimento[i].dataAten.ano);
-                printf("\nAtendimento:\n %s", atendimento[i].aten);
+                printf("\n Atendimento:\n %s", atendimento[i].aten);
                 printf("\n Matrícula do atendimento: %d", atendimento[i].matAten);
                 printf("\n Número do atendimento: %d", atendimento[i].numero);
                 i=variComAten;
@@ -435,20 +435,18 @@ void inserirMedico(Medico* medico){
         system("cls");
         printf("\n--------------------------------------------------INSERIR ATENDIMENTO--------------------------------------------------\n");
 
-        printf("\n:-Data do atendimeneto-\n");
+        printf("\n:-Data do atendimento-\n");
 
-        printf("\nAno:");
+        printf("\n Ano:");
         scanf("%d", &atendimento[i].dataAten.ano);
 
-        printf("\nMês:");
+        printf("\n Mês:");
         scanf("%d", &atendimento[i].dataAten.mes);
 
-        printf("\nDia:");
+        printf("\n Dia:");
         scanf("%d", &atendimento[i].dataAten.dia);
 
         system("cls");
-
-
 
         printf("Sobre o atendimento (Max 500 caracteres)\n:");
         scanf("%s",atendimento[i].aten); //ESSE "SCANF" TÁ COM PROBLEMA!!!!!!!!!!
@@ -456,10 +454,10 @@ void inserirMedico(Medico* medico){
         system("cls");
 
         atendimento[i].matAten = 2023200+variComAten;
-        printf("-Matricula do atendimento: %d", atendimento[i].matAten);
+        printf("\n Matricula do atendimento: %d", atendimento[i].matAten);
 
         atendimento[i].numero = variComAten;
-        printf("\n-Número do atendimento: %d", atendimento[i].numero);
+        printf("\n Número do atendimento: %d", atendimento[i].numero);
 
         printf("\n\n [0]Inserir outro atendimento\n [1]Voltar\n: ");
         scanf("%d", &op);
@@ -492,23 +490,23 @@ void editarAten(Atendimento* atendimento){
                 switch(b){
                 case 1:
                     system("cls");
-                    printf("Digite as novas especificações do atendimento:\n:");
+                    printf(" Digite as novas especificações do atendimento:\n:");
                     scanf("%s", atendimento[i].aten); //ESSE "SCANF" TÁ COM PROBLEMA!!!!!!!!!!
-                    printf("Esse é o atendimento já alterado:\n:%s", atendimento[i].aten);
+                    printf(" Esse é o atendimento já alterado:\n:%s", atendimento[i].aten);
                 break;
                 case 2:
                     system("cls");
-                    printf("Digite a nova data do atendimento:");
-                    printf("\nAno:");
+                    printf(" Digite a nova data do atendimento:");
+                    printf("\n Ano:");
                     scanf("%d", &atendimento[i].dataAten.ano);
 
-                    printf("\nMês:");
+                    printf("\n Mês:");
                     scanf("%d", &atendimento[i].dataAten.mes);
 
-                    printf("\nDia:");
+                    printf("\n Dia:");
                     scanf("%d", &atendimento[i].dataAten.dia);
 
-                    printf("Esse é a data já alterada:%d/%d/%d", atendimento[i].dataAten.dia, atendimento[i].dataAten.mes, atendimento[i].dataAten.ano);
+                    printf(" Esse é a data já alterada:%d/%d/%d", atendimento[i].dataAten.dia, atendimento[i].dataAten.mes, atendimento[i].dataAten.ano);
                 break;
                 default:
                     system("cls");
