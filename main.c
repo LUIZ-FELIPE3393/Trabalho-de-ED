@@ -450,7 +450,8 @@ int lerRegistroProfissao(Profissao* p, long* pos)
     int id_atual = 0;
 
     //Leitura de Arquivo
-    fseek(arquivo_profissao, *pos, SEEK_SET);
+    fseek(arquivo_profissao, (*pos), SEEK_SET);
+    printf("FORA\n");
     while ((c = fgetc(arquivo_profissao)) != EOF)
     {
 	    if (c != '\n')
@@ -546,7 +547,7 @@ int lerRegistroProfissao(Profissao* p, long* pos)
 						//p->siglaProf = sub_BUFFER;
 						lerRegistro = 0;
 						linha_completa = 0;
-						printf("COMPLETO");
+						printf("COMPLETO\n");
 						return 1;
 					}
 				}
