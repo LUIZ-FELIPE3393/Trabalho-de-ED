@@ -437,7 +437,7 @@ void alocarRegistrosProfissao(Profissao* p)
 {
     long pos = 0;
     printf("Alocar Registro Profissao\n");
-    while (lerRegistroProfissao(p, &pos) != 1)
+    while (lerRegistroProfissao(p, &pos) == 1)
     {printf("A\n");}
 }
 
@@ -450,13 +450,14 @@ int lerRegistroProfissao(Profissao* p, long* pos)
     int id_atual = 0;
 
     //Leitura de Arquivo
-    fseek(arquivo_profissao, 0, SEEK_SET);
-    printf("FORA\n");
+    fseek(arquivo_profissao, (*pos), SEEK_SET);
+    printf("POS: %d FORA\n", (*pos));
     while ((c = fgetc(arquivo_profissao)) != EOF)
     {
 	    if (c != '\n')
 	    {
 	    	line_BUFFER[i++] = c;
+            printf("c: %c", line_BUFFER[i]);
 	    	(*pos)++;
 	    }
 		else
