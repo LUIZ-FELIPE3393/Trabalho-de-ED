@@ -29,7 +29,7 @@ typedef struct{
     int  numRegP, fone, matricula;
     Profissao codProf;
     Data dataMed;
-} Medico;
+}Profissional;
 
 typedef struct{
     char nome[50], email[50];
@@ -44,27 +44,30 @@ typedef struct{
     Data dataAten;
 }Atendimento;
 
-void menuMedicos ();
+void menuProfissionais ();
 void menuClientes ();
 void menuAtendimentos (Atendimento* atendimento);
+
 void pesquisarAten(Atendimento* atendimento);
 void inserirAten(Atendimento* atendimento);
 void editarAten(Atendimento* atendimento);
 void removerAten(Atendimento* atendimento);
+
 void menuProfissao (Profissao* profissao);
 void inserirProf(Profissao* profissao);
 void pesquisarProf(Profissao* profissao);
 void removerProf(Profissao* profissao);
 void editarProf(Profissao* profissao);
-void pesquisarMedico(Medico* medico);
-void inserirMedico(Medico* medico);
-void editarMedico(Medico* medico);
-void removerMedico(Medico* medico);
+
+void pesquisarProfissional(Profissional* profissional);
+void inserirProfissional(Profissional* profissional);
+void editarProfissional(Profissional* profissional);
+void removerProfissional(Profissional* profissional);
 
 int main(){
 
     Profissao profissao [TAM_MAX];
-    Medico medico [TAM_MAX];
+    Profissional profissionais [TAM_MAX];
     Atendimento atendimento [TAM_MAX];
 
     setlocale(LC_ALL,"");
@@ -78,7 +81,7 @@ int main(){
 
         switch(op){
         case 1:
-            menuMedicos (medico);
+            menuProfissionais (profissionais);
             system("cls");
         break;
 
@@ -111,7 +114,7 @@ int main(){
     return 0;
 }
 
-void menuMedicos (Medico* medico){
+void menuProfissionais  (Profissional* profissional){
     int op, a;
     do{
         system("cls");
@@ -125,7 +128,7 @@ void menuMedicos (Medico* medico){
         break;
 
         case 2:
-            inserirMedico(medico);
+            inserirProfissional(profissional);
         break;
 
         case 3:
@@ -377,7 +380,7 @@ void editarProf(Profissao* profissao){
 }
 
 
-void inserirMedico(Medico* medico){
+void inserirProfissional(Profissional* profissional){
     int i, op=1;
 
     for(i=0; i<variComMed; i++){
@@ -385,7 +388,7 @@ void inserirMedico(Medico* medico){
         printf("\n---------------------------------------------------AREA DE CADASTRO---------------------------------------------------\n");
         printf("\nNome: ");
         fflush(stdin);
-        gets(medico[i].nome);
+        gets(profissional[i].nome);
         fflush(stdin);
 
         printf("\n\n[0]Novo Cadastro\n[1]Voltar\n");
@@ -496,7 +499,7 @@ void editarAten(Atendimento* atendimento){
                     printf(" Digite as novas especificações do atendimento(Max 500 caracteres):\n:");
                     fflush(stdin);
                     gets(atendimento[i].aten);
-                    fflush(stdin); //ESSE "SCANF" TÁ COM PROBLEMA!!!!!!!!!!
+                    fflush(stdin);
                     printf(" Esse é o atendimento já alterado:\n:%s", atendimento[i].aten);
                 break;
                 case 2:
