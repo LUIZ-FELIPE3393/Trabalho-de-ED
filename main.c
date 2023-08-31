@@ -15,9 +15,13 @@ typedef struct{
 }Data;
 
 typedef struct{
+    char logradouro[30], bairro[30], cidade[20], estado[10];
+    int numEndereco, cep;
+}Endereco;
+
+typedef struct{
     int codProf;
     char nomeProf[50], siglaProf[10];
-
 }Profissao;
 
 typedef struct{
@@ -25,21 +29,19 @@ typedef struct{
     int  numRegP, fone, matricula;
     Profissao codProf;
     Data dataMed;
-
 } Medico;
 
 typedef struct{
     char nome[50], email[50];
     int idade, fone, celular;
     Data dataCliente;
-
+    Endereco endereco;
 }Cliente;
 
 typedef struct{
     int numero, matAten;
     char aten[TAM_MAX];
     Data dataAten;
-
 }Atendimento;
 
 void menuMedicos ();
@@ -293,7 +295,6 @@ void pesquisarProf(Profissao* profissao){
         system("cls");
 
         for(i=0; i<variComProf; i++){
-            //if(op==(((profissao[i].codProf)||profissao[i].nomeProf)||profissao[i].siglaProf)){
             sprintf(str, "%d", profissao[i].codProf);
             if(strcmp(op, profissao[i].nomeProf) == 0 || strcmp(op, str) == 0 || strcmp(op, profissao[i].siglaProf) == 0){
                 printf("\n Nome da profissão: %s", profissao[i].nomeProf);
@@ -383,9 +384,9 @@ void inserirMedico(Medico* medico){
         system("cls");
         printf("\n---------------------------------------------------AREA DE CADASTRO---------------------------------------------------\n");
         printf("\nNome: ");
-        scanf("%s", medico[i].nome);
-
-
+        fflush(stdin);
+        gets(medico[i].nome);
+        fflush(stdin);
 
         printf("\n\n[0]Novo Cadastro\n[1]Voltar\n");
         scanf("%d", &op);
@@ -449,7 +450,9 @@ void inserirMedico(Medico* medico){
         system("cls");
 
         printf("Sobre o atendimento (Max 500 caracteres)\n:");
-        scanf("%s",atendimento[i].aten); //ESSE "SCANF" TÁ COM PROBLEMA!!!!!!!!!!
+        fflush(stdin);
+        gets(atendimento[i].aten);
+        fflush(stdin);
 
         system("cls");
 
@@ -490,8 +493,10 @@ void editarAten(Atendimento* atendimento){
                 switch(b){
                 case 1:
                     system("cls");
-                    printf(" Digite as novas especificações do atendimento:\n:");
-                    scanf("%s", atendimento[i].aten); //ESSE "SCANF" TÁ COM PROBLEMA!!!!!!!!!!
+                    printf(" Digite as novas especificações do atendimento(Max 500 caracteres):\n:");
+                    fflush(stdin);
+                    gets(atendimento[i].aten);
+                    fflush(stdin); //ESSE "SCANF" TÁ COM PROBLEMA!!!!!!!!!!
                     printf(" Esse é o atendimento já alterado:\n:%s", atendimento[i].aten);
                 break;
                 case 2:
