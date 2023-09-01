@@ -2,80 +2,111 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
+#include <time.h>
 
-#define OUT_FORMAT_PROFISSAO "%d-(%d, %s, %s)\n\0" // FORMATO PADRAO PARA REGISTRO DE PROFISSAO
-#define REG_TAM_MAX 512 // TAMANHO MÁXIMO PADRÃO DOS REGISTROS
+#define TAM_MAX 512
 
-int variComProfissao=1; //variavel de comando da profiss�o
+int variComProfissao = 0; //variavel de comando da profiss�o
+int tamVetProfissao = 0; //tamanho atual do vetor de profissao
 int variComProfissional=1; //variavel de comando de medico
-int arquivo_index_escrita = 0;
-//int arquivo_index_leitura = 0;
+int variComAten=1; //variavel de comando de atendimento
+
+const int codBaseProfissao = 2023100;
+
+const char* OUT_PROFISSAO_FORMAT =  
+    "%d{nome:\"%s\",sigla:%s}\n";
+
+const char* IN_PROFISSAO_FORMAT =  
+    "%d{nome:\"%[^\"]\",sigla:%[^}]}";
 
 FILE* arquivo_profissao = NULL;
+FILE* arquivo_log = NULL;
+
+
+typedef struct{
+    int dia, mes, ano;
+}Data;
+
+typedef struct{
+    char logradouro[30], bairro[30], cidade[20], estado[10];
+    int numEndereco, cep;
+}Endereco;
 
 typedef struct{
     int codProf;
     char nomeProf[50], siglaProf[10];
-//Registro das profiss�es
 }Profissao;
 
 typedef struct{
     char cpf[11], nome[50], email[50], tipo[50];
-    int codProf, numRegP, fone, matricula, dia, mes, ano;
-//Registro dos Profissionais de sa�de
+    int  numRegP, fone, matricula;
+    Profissao codProf;
+    Data dataMed;
 }Profissional;
 
 typedef struct{
     char nome[50], email[50];
-    int idade, fone, celular, dia, mes, ano;
-//Registro dos clientes
+    int idade, fone, celular;
+    Data dataCliente;
+    Endereco endereco;
 }Cliente;
 
 typedef struct{
-    int numero, matricula, dia, mes, ano;
-//Registro dos atendimentos
+    int numero, matAten;
+    char aten[TAM_MAX];
+    Data dataAten;
 }Atendimento;
 
-//Funções (Features do programa) (Declarar)
-//Funções Leitura de Arquivos
-int abrirArquivo(FILE** arquivo, const char* caminho);
-int lerRegistroProfissao(Profissao *p, long* pos);
-void alocarRegistrosProfissao(Profissao* p);
-
-//Funções Escrita de Arquivos
-void registrarProfissao(Profissao *p); // FUNCAO
-
-//Funções Menu
-void menuProfissionais ();
+void menuProfissionais (Profissional* profissional);
 void menuClientes ();
-void menuAtendimentos ();
 void menuProfissao (Profissao* profissao);
+void menuAtendimentos (Atendimento* atendimento);
 
-//Funções Profissão
+void pesquisarAten(Atendimento* atendimento);
+void inserirAten(Atendimento* atendimento);
+void editarAten(Atendimento* atendimento);
+void removerAten(Atendimento* atendimento);
+
 void inserirProf(Profissao* profissao);
 void pesquisarProf(Profissao* profissao);
 void removerProf(Profissao* profissao);
 void editarProf(Profissao* profissao);
 
-//Funções Profissional
 void pesquisarProfissional(Profissional* profissional);
 void inserirProfissional(Profissional* profissional);
 void editarProfissional(Profissional* profissional);
 void removerProfissional(Profissional* profissional);
 
+int abrirArquivo(FILE** arquivo, const char* caminho);
+void gerarProf(Profissao* profissao);
+void alocarRegistrosProfissao(Profissao* p);
+int lerRegistroProfissao(Profissao* p, long* pos);
+void registrarProfissao(Profissao *p);  
+void atualizarRegistroProfissao(Profissao* p);
+
+
 int main(){
-    Profissao profissoes [REG_TAM_MAX];
-    Profissional profissionais [REG_TAM_MAX];
-    setlocale(LC_ALL,"portuguese");
+
+    Profissao profissoes [TAM_MAX];
+    Profissional profissionais [TAM_MAX];
+    Atendimento atendimento [TAM_MAX];
+
+    setlocale(LC_ALL,"Portuguese");
 
     abrirArquivo(&arquivo_profissao, "regProfissao.txt");
+    if((arquivo_log = fopen("log.txt", "w")) == NULL)
+    {
+        printf("Não foi possível criar o arquivo \"log.txt\" \n");
+        return 0;
+    }
     alocarRegistrosProfissao(profissoes);
+
 
     int op, a=0;
 
     do{
         printf("\n--------------------------------------------------------BEM VINDO-------------------------------------------------------\n");
-        printf("\n Pesquisar por:\n [1]M�dico\n [2]Cliente\n [3]Atendimento\n [4]Profiss�o\n\n [5]Sair \n\n :");
+        printf("\n Pesquisar por:\n [1]Médico\n [2]Cliente\n [3]Atendimento\n [4]Profissão\n\n [5]Sair \n\n :");
         scanf("%d", &op);
 
         switch(op){
@@ -90,7 +121,7 @@ int main(){
         break;
 
         case 3:
-            menuAtendimentos ();
+            menuAtendimentos (atendimento);
             system("cls");
         break;
 
@@ -109,21 +140,21 @@ int main(){
         }
     }while(a<1);
 
-    system("pause");
+
     return 0;
 }
 
-void menuProfissionais (Profissional* profissional){
+void menuProfissionais  (Profissional* profissional){
     int op, a;
     do{
         system("cls");
-        printf("\n----------------------------------------------------MENU DE M�DICOS-----------------------------------------------------\n");
-        printf("\n [1]Pesquisar por m�dico\n [2]Inserir m�dico\n [3]Editar informa��es de um m�dico\n [4]Remover m�dico\n\n [5]Voltar \n\n :");
+        printf("\n----------------------------------------------------MENU DE MÉDICOS-----------------------------------------------------\n");
+        printf("\n [1]Pesquisar por médico\n [2]Inserir médico\n [3]Editar informações de um médico\n [4]Remover médico\n\n [5]Voltar \n\n :");
         scanf("%d", &op);
 
         switch(op){
         case 1:
-            //Fun��o para pesquisar por m�dico
+            //Função para pesquisar por médico
         break;
 
         case 2:
@@ -131,11 +162,11 @@ void menuProfissionais (Profissional* profissional){
         break;
 
         case 3:
-            //Fun��o para editar informa��es dos m�dicos
+            //Função para editar informações dos médicos
         break;
 
         case 4:
-            //Fun��o para remover m�dico
+            //Função para remover médico
         break;
 
         case 5:
@@ -154,24 +185,24 @@ void menuClientes (){
     do{
         system("cls");
         printf("\n----------------------------------------------------MENU DE CLIENTES----------------------------------------------------\n");
-        printf("\n [1]Pesquisar por cliente\n [2]Inserir cliente\n [3]Editar informa��es de um cliente\n [4]Remover cliente\n\n [5]Voltar \n\n :");
+        printf("\n [1]Pesquisar por cliente\n [2]Inserir cliente\n [3]Editar informações de um cliente\n [4]Remover cliente\n\n [5]Voltar \n\n :");
         scanf("%d", &op);
 
         switch(op){
         case 1:
-            //Fun��o para pesquisar por cliente
+            //Função para pesquisar por cliente
         break;
 
         case 2:
-            //Fun��o para inserir cliente
+            //Função para inserir cliente
         break;
 
         case 3:
-            //Fun��o para editar informa��es dos cliente
+            //Função para editar informações dos cliente
         break;
 
         case 4:
-            //Fun��o para remover cliente
+            //Função para remover cliente
         break;
 
         case 5:
@@ -185,29 +216,29 @@ void menuClientes (){
     }while(a<1);
 }
 
-void menuAtendimentos (){
+void menuAtendimentos (Atendimento* atendimento){
     int op, a;
     do{
         system("cls");
         printf("\n--------------------------------------------------MENU DE ATENDIMENTOS--------------------------------------------------\n");
-        printf("\n [1]Pesquisar por atendimento\n [2]Inserir atendimento\n [3]Editar informa��es de um atendimento\n [4]Remover atendimento\n\n [5]Voltar \n\n :");
+        printf("\n [1]Pesquisar por atendimento\n [2]Inserir atendimento\n [3]Editar informações de um atendimento\n [4]Remover atendimento\n\n [5]Voltar \n\n :");
         scanf("%d", &op);
 
         switch(op){
         case 1:
-            //Fun��o para pesquisar por atendimento
+            pesquisarAten(atendimento);
         break;
 
         case 2:
-            //Fun��o para inserir atendimento
+            inserirAten(atendimento);
         break;
 
         case 3:
-            //Fun��o para editar informa��es dos atendimentos
+            editarAten(atendimento);
         break;
 
         case 4:
-            //Fun��o para remover atendimento
+            removerAten(atendimento);
         break;
 
         case 5:
@@ -226,7 +257,7 @@ void menuProfissao (Profissao* profissao){
     do{
         system("cls");
         printf("\n----------------------------------------------------MENU DE PROFISSÃO---------------------------------------------------\n");
-        printf("\n [1]Pesquisar por profissão\n [2]Inserir profissão\n [3]Editar informações de uma profiss�o\n [4]Remover profissão\n\n [5]Voltar \n\n :");
+        printf("\n [1]Pesquisar por profissão\n [2]Inserir profissão\n [3]Editar informações de uma profissão\n [4]Remover profissão\n\n [5]Voltar \n\n :");
         scanf("%d", &op);
 
         switch(op){
@@ -258,26 +289,34 @@ void menuProfissao (Profissao* profissao){
 }
 
 void inserirProf(Profissao* profissao){
-    int  i, op=1;
+    int i, op=1;
 
-    for(i=0; i < variComProfissao; i++){
+    while(1){
         system("cls");
-        printf("\n---------------------------------------------------INSIRA A PROFISSÃO---------------------------------------------------\n");
+        for (i = 0; i < tamVetProfissao; i++)
+        {
+            if (profissao[i].codProf == 0)
+            {
+                variComProfissao = i;
+            }
+        }
+        printf("\n---------------------------------------------------INSIRIR PROFISSÃO---------------------------------------------------\n");
         printf("\nInserir o nome da profissão: ");
-        scanf("%s", profissao[i].nomeProf);
+        scanf("%s", profissao[variComProfissao].nomeProf);
 
         printf("\nInserir o sigla da profissão: ");
-        scanf("%s", profissao[i].siglaProf);
+        scanf("%s", profissao[variComProfissao].siglaProf);
 
-        profissao[i].codProf = 2023100+variComProfissao;
-        printf("\nCódigo da profissão:%d", profissao[i].codProf);
+        profissao[variComProfissao].codProf = codBaseProfissao+variComProfissao;
+        printf("\nCódigo da profissão:%d", profissao[variComProfissao].codProf);
 
-        registrarProfissao(&profissao[i]);
+        registrarProfissao(&profissao[variComProfissao]);
+        tamVetProfissao++;
         printf("\n\n [0]Inserir outra profisssão\n [1]Voltar\n: ");
         scanf("%d", &op);
 
-        if(op==0){
-            variComProfissao++;
+        if(op==1){
+            break;
         }
         else{
             system("cls");
@@ -287,77 +326,146 @@ void inserirProf(Profissao* profissao){
 }
 
 void pesquisarProf(Profissao* profissao){
-    int i, a=0;
-    char op[50], str[8];
+    int i, ii = 0, a=0;
+    char op[50];
+    int codigo, eNumero;
 
     do{
         system("cls");
         printf("-------------------------------------------------PESQUISA POR PROFISSÃO-------------------------------------------------");
         printf("\nDigita algo para a pesquisa (Nome, Sigla ou Código da Profissão)\n:");
         scanf("%s", op);
+        fflush(stdin);
         system("cls");
+        eNumero = 1;
 
+        //Verificando se op é número
+        while(ii < strlen(op))
+        {
+            if(!(op[ii] >= '0' && op[ii] < '9'))
+            {
+                printf("%c", op[ii]);
+                eNumero = 0;
+            }
+            ii++;
+        }
 
+        if(eNumero)
+        {
+            printf("\nÉ número");
+            codigo = atoi(op);
+        }
 
-        printf("\n\n [0]Ver outra profisss�o\n [1]Voltar\n: ");
+        for(i=0; i<tamVetProfissao; i++){
+            //Você pode usar atoi para converter uma string para int
+            if(strcmp(op, profissao[i].nomeProf) == 0 || codigo == profissao[i].codProf || strcmp(op, profissao[i].siglaProf) == 0){
+                variComProfissao = profissao[i].codProf - codBaseProfissao;
+                printf("\n Nome da profissão: %s", profissao[i].nomeProf);
+                printf("\n Sigla da profissão: %s", profissao[i].siglaProf);
+                printf("\n Código da profissão: %d", profissao[i].codProf);
+            }
+        }
+
+        printf("\n\n [0]Ver outra profisssão\n [1]Voltar\n: ");
         scanf("%d", &a);
 
     }while(a<1);
 }
 
 void removerProf(Profissao* profissao){
-    int i, a=0;
+    int i, ii = 0, a=0;
     char op[50], str[8];
+    int codigo, eNumero;
 
     do{
         system("cls");
-        printf("-------------------------------------------------PESQUISA POR PROFISS�O-------------------------------------------------");
-        printf("\nDigita algo para a identificar a profiss�o que voc� deseja remover (Nome, Sigla ou C�digo da Profiss�o)\n:");
+        printf("-------------------------------------------------REMOVER PROFISSÃO-------------------------------------------------");
+        printf("\nDigita algo para a identificar a profissão que você deseja remover (Nome, Sigla ou Código da Profissão)\n:");
         scanf("%s", op);
         system("cls");
 
-        for(i=0; i<variComProfissao; i++){
-            sprintf(str, "%d", profissao[i].codProf);
-            if(strcmp(op, profissao[i].nomeProf) == 0 || strcmp(op, str) == 0 || strcmp(op, profissao[i].siglaProf) == 0){
+        eNumero = 1;
+
+        //Verificando se op é número
+        while(ii < strlen(op))
+        {
+            if(!(op[ii] >= '0' && op[ii] < '9'))
+            {
+                printf("%c", op[ii]);
+                eNumero = 0;
+            }
+            ii++;
+        }
+
+        if(eNumero)
+        {
+            printf("\nÉ número");
+            codigo = atoi(op);
+        }
+
+        for(i=0; i<tamVetProfissao; i++){
+            //Você pode usar atoi para converter uma string para int
+            if(strcmp(op, profissao[i].nomeProf) == 0 || codigo == profissao[i].codProf || strcmp(op, profissao[i].siglaProf) == 0){
                 memset(profissao[i].nomeProf, 0, sizeof(char[50]) );
                 memset(profissao[i].siglaProf, 0, sizeof(char[10]) );
                 profissao[i].codProf = 0;
+                atualizarRegistroProfissao(&profissao[i]);
             }
         }
 
-        printf("\n\n [0]Ver outra profisss�o\n [1]Voltar\n: ");
+        printf("\n\n [0]Ver outra profisssão\n [1]Voltar\n: ");
         scanf("%d", &a);
 
     }while(a<1);
 }
 
 void editarProf(Profissao* profissao){
-   int i, a=0, b;
+   int i, ii = 0, a=0, b;
     char op[50], str[8];
+    int codigo, eNumero;
 
     do{
         system("cls");
-        printf("-------------------------------------------------EDITAR POR PROFISS�O-------------------------------------------------");
-        printf("\nDigita algo para a identificar a profiss�o que voc� deseja editar (Nome, Sigla ou C�digo da Profiss�o)\n:");
+        printf("------------------------------------------------EDITAR PROFISSÃO-------------------------------------------------");
+        printf("\nDigita algo para a identificar a profissão que você deseja editar (Nome, Sigla ou Código da Profissão)\n:");
         scanf("%s", op);
         system("cls");
+
+        eNumero = 1;
+
+        //Verificando se op é número
+        while(ii < strlen(op))
+        {
+            if(!(op[ii] >= '0' && op[ii] < '9'))
+            {
+                printf("%c", op[ii]);
+                eNumero = 0;
+            }
+            ii++;
+        }
+
+        if(eNumero)
+        {
+            printf("\nÉ número");
+            codigo = atoi(op);
+        }
 
         for(i=0; i<variComProfissao; i++){
             sprintf(str, "%d", profissao[i].codProf);
             if(strcmp(op, profissao[i].nomeProf) == 0 || strcmp(op, str) == 0 || strcmp(op, profissao[i].siglaProf) == 0){
-                    printf("\nInforme qual dado voc� deseja alterar \n[1]Nome \n[2]Sigla\n:");
+                    printf("\nInforme qual dado você deseja alterar \n[1]Nome \n[2]Sigla\n:");
                     scanf("%d", &b);
 
                 switch(b){
                 case 1:
-                    printf("Digite o novo nome da profiss�o:");
+                    printf("Digite o novo nome da profissão:");
                     scanf("%s", profissao[i].nomeProf);
-                    printf("Esse � o disciplina j� alterado:%s", profissao[i].nomeProf);
+                    printf("Esse é o disciplina já alterado:%s", profissao[i].nomeProf);
                 break;
                 case 2:
-                    printf("Digite a nova sigla da profiss�o:");
+                    printf("Digite a nova sigla da profissão:");
                     scanf("%s", profissao[i].nomeProf);
-                    printf("Esse � a sigla j� alterada:%s", profissao[i].siglaProf);
+                    printf("Esse é a sigla já alterada:%s", profissao[i].siglaProf);
                 break;
                 default:
                     system("cls");
@@ -366,7 +474,7 @@ void editarProf(Profissao* profissao){
             }
         }
 
-        printf("\n\n [0]Ver outra profisss�o\n [1]Voltar\n: ");
+        printf("\n\n [0]Ver outra profisssão\n [1]Voltar\n: ");
         scanf("%d", &a);
 
     }while(a<1);
@@ -380,7 +488,9 @@ void inserirProfissional(Profissional* profissional){
         system("cls");
         printf("\n---------------------------------------------------AREA DE CADASTRO---------------------------------------------------\n");
         printf("\nNome: ");
-        scanf("%s", profissional[i].nome);
+        fflush(stdin);
+        gets(profissional[i].nome);
+        fflush(stdin);
 
         printf("\n\n[0]Novo Cadastro\n[1]Voltar\n");
         scanf("%d", &op);
@@ -395,9 +505,220 @@ void inserirProfissional(Profissional* profissional){
     }
 }
 
+ void pesquisarAten(Atendimento* atendimento){
+    int i, a=0, op;
+
+    do{
+        system("cls");
+        printf("-------------------------------------------------PESQUISAR POR ATENDIMENTO-------------------------------------------------");
+
+        printf("\nDigita algo para a pesquisa (Matrícula ou número do atendimento)\n:");
+        scanf("%d", &op);
+
+        system("cls");
+
+        for(i=0; i<variComAten; i++){
+            if(op==atendimento[i].matAten||op==atendimento[i].numero){
+                printf("\n Data do atendimento: %d/%d/%d", atendimento[i].dataAten.dia, atendimento[i].dataAten.mes, atendimento[i].dataAten.ano);
+                printf("\n Atendimento:\n %s", atendimento[i].aten);
+                printf("\n Matrícula do atendimento: %d", atendimento[i].matAten);
+                printf("\n Número do atendimento: %d", atendimento[i].numero);
+                i=variComAten;
+            }
+        }
+
+        printf("\n\n [0]Ver outro atendimento\n [1]Voltar\n: ");
+        scanf("%d", &a);
+
+    }while(a<1);
+ }
+
+ void inserirAten(Atendimento* atendimento){
+     int  i, op=1;
+
+    for(i=0; i<variComAten; i++){
+        system("cls");
+        printf("\n--------------------------------------------------INSERIR ATENDIMENTO--------------------------------------------------\n");
+
+        printf("\n:-Data do atendimento-\n");
+
+        printf("\n Ano:");
+        scanf("%d", &atendimento[i].dataAten.ano);
+
+        printf("\n Mês:");
+        scanf("%d", &atendimento[i].dataAten.mes);
+
+        printf("\n Dia:");
+        scanf("%d", &atendimento[i].dataAten.dia);
+
+        system("cls");
+
+        printf("Sobre o atendimento (Max 500 caracteres)\n:");
+        fflush(stdin);
+        gets(atendimento[i].aten);
+        fflush(stdin);
+
+        system("cls");
+
+        atendimento[i].matAten = 2023200+variComAten;
+        printf("\n Matricula do atendimento: %d", atendimento[i].matAten);
+
+        atendimento[i].numero = variComAten;
+        printf("\n Número do atendimento: %d", atendimento[i].numero);
+
+        printf("\n\n [0]Inserir outro atendimento\n [1]Voltar\n: ");
+        scanf("%d", &op);
+
+        if(op==0){
+            variComAten++;
+        }
+        else{
+            system("cls");
+            continue;
+        }
+    }
+ }
+
+void editarAten(Atendimento* atendimento){
+    int i, a=0, b, op;
+
+    do{
+        system("cls");
+        printf("-------------------------------------------------EDITAR  ATENDIMENTO-------------------------------------------------");
+        printf("\nDigita algo para a identificar o atendimento que você deseja editar (matrícula ou número do atendimento)\n:");
+        scanf("%d", &op);
+        system("cls");
+
+        for(i=0; i<variComAten; i++){
+            if(op==atendimento[i].matAten||op==atendimento[i].numero){
+                    printf("\nInforme qual dado você deseja alterar \n[1]O atendimento \n[2]A data\n:");
+                    scanf("%d", &b);
+
+                switch(b){
+                case 1:
+                    system("cls");
+                    printf(" Digite as novas especificações do atendimento(Max 500 caracteres):\n:");
+                    fflush(stdin);
+                    gets(atendimento[i].aten);
+                    fflush(stdin);
+                    printf(" Esse é o atendimento já alterado:\n:%s", atendimento[i].aten);
+                break;
+                case 2:
+                    system("cls");
+                    printf(" Digite a nova data do atendimento:");
+                    printf("\n Ano:");
+                    scanf("%d", &atendimento[i].dataAten.ano);
+
+                    printf("\n Mês:");
+                    scanf("%d", &atendimento[i].dataAten.mes);
+
+                    printf("\n Dia:");
+                    scanf("%d", &atendimento[i].dataAten.dia);
+
+                    printf(" Esse é a data já alterada:%d/%d/%d", atendimento[i].dataAten.dia, atendimento[i].dataAten.mes, atendimento[i].dataAten.ano);
+                break;
+                default:
+                    system("cls");
+                    continue;
+                }
+            }
+        }
+
+        printf("\n\n [0]Ver outra profisssão\n [1]Voltar\n: ");
+        scanf("%d", &a);
+
+    }while(a<1);
+}
+
+void removerAten(Atendimento* atendimento){
+    int i, a=0, op;
+
+    do{
+        system("cls");
+        printf("-------------------------------------------------REMOVER ATENDIMENTO-------------------------------------------------");
+        printf("\nDigita algo para a identificar o atendimento que você deseja remover (matrícula ou número do atendimento)\n:");
+        scanf("%d", &op);
+        system("cls");
+
+        for(i=0; i<variComAten; i++){
+            if(op==atendimento[i].matAten||op==atendimento[i].numero){
+                memset(atendimento[i].aten, 0, sizeof(char[TAM_MAX]) );
+                atendimento[i].matAten = 0;
+                atendimento[i].numero = 0;
+                atendimento[i].dataAten.ano = 0;
+                atendimento[i].dataAten.dia = 0;
+                atendimento[i].dataAten.mes = 0;
+            }
+        }
+
+        printf("\n [0]Remover outro atendimento\n [1]Voltar\n: ");
+        scanf("%d", &a);
+
+    }while(a<1);
+}
+
 /*
-MODULO ARQUIVOS
+======Módulo Arquivos======
 */
+
+void atualizarRegistroProfissao(Profissao* p)
+{
+    int i = 0, c;
+    int codProf;
+    char lbuffer[256];
+    char nome[50], sigla[10];
+
+    fclose(arquivo_profissao);
+    arquivo_profissao = fopen("regProfissao.txt", "w");
+
+    for (i = 0; i < tamVetProfissao; i++)
+    {
+        registrarProfissao(&p[i]);
+    }
+
+    fclose(arquivo_profissao);
+}
+
+void registrarProfissao(Profissao *p)
+{
+    fseek(arquivo_profissao, 0, SEEK_END);
+    fprintf(arquivo_profissao, OUT_PROFISSAO_FORMAT, p->codProf, p->nomeProf, p->siglaProf );
+    fseek(arquivo_profissao, 0, SEEK_SET);
+}
+
+int lerRegistroProfissao(Profissao* p, long* pos)
+{
+    fseek(arquivo_profissao, (*pos), SEEK_SET);
+    int i = 0, mudarVariCom = 1;
+    do
+    {
+        fscanf(arquivo_profissao, IN_PROFISSAO_FORMAT, &p[i].codProf, p[i].nomeProf, p[i].siglaProf);
+        printf("%d\n",p[i].codProf);
+        if (p[i].codProf == 0)
+        {
+            mudarVariCom = 0;
+            break;
+        }
+        if(mudarVariCom)
+        {
+            variComProfissao++;
+        }
+        i++;
+        
+    } while (1);
+    //variComProfissao++;
+    //fseek(arquivo_log, 0, SEEK_END);
+}
+
+void alocarRegistrosProfissao(Profissao* p)
+{
+    long pos = 0;
+    fseek(arquivo_profissao, 0, SEEK_SET);
+    fprintf(arquivo_log, "Alocar Registro Profissao\n");
+    printf("\n====================================\n");
+    lerRegistroProfissao(p, &pos);
+    tamVetProfissao = variComProfissao;
+}
 
 int abrirArquivo(FILE** arquivo, const char* caminho)
 {
@@ -433,139 +754,12 @@ int abrirArquivo(FILE** arquivo, const char* caminho)
     return 1;
 }
 
-void alocarRegistrosProfissao(Profissao* p)
+void gerarProf(Profissao* profissao)
 {
-    long pos = 0;
-    printf("Alocar Registro Profissao\n");
-    while (lerRegistroProfissao(p, &pos) == 1)
-    {printf("A\n");}
-}
-
-int lerRegistroProfissao(Profissao* p, long* pos)
-{
-	char line_BUFFER[128], sub_BUFFER[16];
-    char c;
-    int lerRegistro = 0, linha_completa = 0; //bool
-    int i = 0, ii = 0;
-    int id_atual = 0;
-
-    //Leitura de Arquivo
-    fseek(arquivo_profissao, (*pos), SEEK_SET);
-    printf("POS: %d FORA\n", (*pos));
-    while ((c = fgetc(arquivo_profissao)) != EOF)
+    int i;
+    system("cls");
+    for(i=0; i < tamVetProfissao; i++)
     {
-	    if (c != '\n')
-	    {
-	    	line_BUFFER[i++] = c;
-            printf("c: %c", line_BUFFER[i]);
-	    	(*pos)++;
-	    }
-		else
-		{
-			linha_completa = 1;
-			line_BUFFER[i] = '\0';
-		}
-
-	    if(!linha_completa)
-        {
-            continue;
-        }
-
-		printf("linhaCompleta: %s\n", line_BUFFER);
-	    i = 0;
-	    //printf("SUB:%s\n", sub_BUFFER);
-	    memset(sub_BUFFER, 0, sizeof(sub_BUFFER));
-
-	    int j = 0;
-        printf("isDigit: %c\n", line_BUFFER[j]);
-	    while ((c = line_BUFFER[j++] )!= '-')
-	    {
-	    	if (c >= '0' && c <= '9') // Converte id do registro para inteiro
-    		{
-				//printf("SUB:%s", sub_BUFFER);
-    			sub_BUFFER[ii++] = c;
-				//printf("c:%c\n", c);
-			}
-		}
-		// Verifica se � a id correta
-		id_atual = atoi(sub_BUFFER);
-        arquivo_index_escrita = id_atual+1;
-		lerRegistro = 1;
-
-	    //Leitura de Registro
-	    if (lerRegistro)
-	    while ((c = line_BUFFER[i++] )!= '\0')
-	    {
-			if (lerRegistro)
-			{
-				//printf("c:%c\n", c);
-				//printf("LerRegistro\n");
-				if (line_BUFFER[i] == '(')
-				{
-					while (line_BUFFER[++i] != ')')
-					{
-						//Dentro do Par�nteses
-						//printf("Dentro\n");
-
-						ii = 0;
-						while ( (c = line_BUFFER[++i] ) != ',')
-						{
-							//CODIGO
-							if (isdigit(c))
-						   	{
-						   		sub_BUFFER[ii++] = c;
-								//printf("c:%c\n", c);
-							}
-						}
-						p->codProf = atoi(sub_BUFFER);
-						memset(sub_BUFFER, 0, sizeof(sub_BUFFER));
-
-						ii = 0;
-						do
-						{
-							//NOME
-							p->nomeProf[ii++] = line_BUFFER[i];
-							i++;
-						} while (line_BUFFER[i] != ',');
-
-						p->nomeProf[ii] = '\0';
-						//printf("NOME: %s\n", p->nome);
-						memset(sub_BUFFER, 0, sizeof(sub_BUFFER));
-
-						//printf("idade BUFFER:%s\n", sub_BUFFER);
-                        ii = 0;
-						while ((c = line_BUFFER[++i]) != ')') // Termina Leitura
-						{
-							//SIGLA
-							if(!isspace(c))
-							{
-								p->siglaProf[ii++] = line_BUFFER[i];
-							}
-						}
-
-						//p->siglaProf = sub_BUFFER;
-						lerRegistro = 0;
-						linha_completa = 0;
-						printf("COMPLETO\n");
-						return 1;
-					}
-				}
-			}
-		}
-        memset(line_BUFFER, 0, sizeof(line_BUFFER));
-	}
-
-	printf("num_BUFFER:%s\n", sub_BUFFER);
-    memset(sub_BUFFER, 0, sizeof(sub_BUFFER));
-    //printf("%s\n", BUFFER);
-    return 0;
-}
-
-//Funções Escrita de Arquivos (Implementar)
-void registrarProfissao(Profissao *p) // FUNCAO TESTE
-{
-    fseek(arquivo_profissao, 0, SEEK_END);
-    fprintf(arquivo_profissao, OUT_FORMAT_PROFISSAO, arquivo_index_escrita, p->codProf, p->nomeProf, p->siglaProf );
-    fseek(arquivo_profissao, 0, SEEK_SET);
-    arquivo_index_escrita++;
+        printf(OUT_PROFISSAO_FORMAT, profissao[i].codProf, profissao[i].nomeProf, profissao[i].siglaProf);
+    }
 }
