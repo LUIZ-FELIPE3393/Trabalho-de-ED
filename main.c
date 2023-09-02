@@ -13,14 +13,17 @@ int variComAten=1; //variavel de comando de atendimento
 
 const int codBaseProfissao = 2023100;
 
-const char* OUT_PROFISSAO_FORMAT =  
+const char* OUT_PROFISSAO_FORMAT =
     "%d{nome:\"%s\",sigla:%s}\n";
 
-const char* IN_PROFISSAO_FORMAT =  
+const char* IN_PROFISSAO_FORMAT =
     "%d{nome:\"%[^\"]\",sigla:%[^}]}";
 
 FILE* arquivo_profissao = NULL;
 FILE* arquivo_log = NULL;
+
+const char ARQUIVO_MODO_ESCREVER = 0;
+const char ARQUIVO_MODO_LER = 1;
 
 
 typedef struct{
@@ -77,11 +80,11 @@ void inserirProfissional(Profissional* profissional);
 void editarProfissional(Profissional* profissional);
 void removerProfissional(Profissional* profissional);
 
-int abrirArquivo(FILE** arquivo, const char* caminho);
+int abrirArquivo(FILE** arquivo, const char* caminho, const char modo);
 void gerarProf(Profissao* profissao);
 void alocarRegistrosProfissao(Profissao* p);
 int lerRegistroProfissao(Profissao* p, long* pos);
-void registrarProfissao(Profissao *p);  
+void registrarProfissao(Profissao *p);
 void atualizarRegistroProfissao(Profissao* p);
 
 
@@ -93,7 +96,7 @@ int main(){
 
     setlocale(LC_ALL,"Portuguese");
 
-    abrirArquivo(&arquivo_profissao, "regProfissao.txt");
+    abrirArquivo(&arquivo_profissao, "regProfissao.txt", ARQUIVO_MODO_LER);
     if((arquivo_log = fopen("log.txt", "w")) == NULL)
     {
         printf("Não foi possível criar o arquivo \"log.txt\" \n");
@@ -105,6 +108,8 @@ int main(){
     int op, a=0;
 
     do{
+        printf("varComProfissao: %d\n", variComProfissao); //REMOVA-ME
+        printf("tamVetProfissao: %d\n", tamVetProfissao); //REMOVA-ME
         printf("\n--------------------------------------------------------BEM VINDO-------------------------------------------------------\n");
         printf("\n Pesquisar por:\n [1]Médico\n [2]Cliente\n [3]Atendimento\n [4]Profissão\n\n [5]Sair \n\n :");
         scanf("%d", &op);
@@ -293,7 +298,12 @@ void inserirProf(Profissao* profissao){
 
     while(1){
         system("cls");
-        for (i = 0; i < tamVetProfissao; i++)
+        for (i = 0; i <= 999; i++)
+        {
+            if (i = profissao)
+            i++;
+        }
+        for (i = 2023100; i <= tamVetProfissao; i++)
         {
             if (profissao[i].codProf == 0)
             {
@@ -301,6 +311,7 @@ void inserirProf(Profissao* profissao){
             }
         }
         printf("\n---------------------------------------------------INSIRIR PROFISSÃO---------------------------------------------------\n");
+        printf("\nCodigo = %d\n", codBaseProfissao+variComProfissao);
         printf("\nInserir o nome da profissão: ");
         scanf("%s", profissao[variComProfissao].nomeProf);
 
@@ -310,8 +321,9 @@ void inserirProf(Profissao* profissao){
         profissao[variComProfissao].codProf = codBaseProfissao+variComProfissao;
         printf("\nCódigo da profissão:%d", profissao[variComProfissao].codProf);
 
-        registrarProfissao(&profissao[variComProfissao]);
         tamVetProfissao++;
+        variComProfissao++;
+        atualizarRegistroProfissao(profissao);
         printf("\n\n [0]Inserir outra profisssão\n [1]Voltar\n: ");
         scanf("%d", &op);
 
@@ -669,10 +681,11 @@ void atualizarRegistroProfissao(Profissao* p)
     char nome[50], sigla[10];
 
     fclose(arquivo_profissao);
-    arquivo_profissao = fopen("regProfissao.txt", "w");
+    abrirArquivo(arquivo_profissao, "regProfissao.txt", ARQUIVO_MODO_ESCREVER);
 
     for (i = 0; i < tamVetProfissao; i++)
     {
+        printf("Profissao %s foi registrada!\n", p[i].nomeProf);
         registrarProfissao(&p[i]);
     }
 
@@ -682,7 +695,10 @@ void atualizarRegistroProfissao(Profissao* p)
 void registrarProfissao(Profissao *p)
 {
     fseek(arquivo_profissao, 0, SEEK_END);
-    fprintf(arquivo_profissao, OUT_PROFISSAO_FORMAT, p->codProf, p->nomeProf, p->siglaProf );
+    if (p->codProf)
+    {
+        fprintf(arquivo_profissao, OUT_PROFISSAO_FORMAT, p->codProf, p->nomeProf, p->siglaProf );
+    }
     fseek(arquivo_profissao, 0, SEEK_SET);
 }
 
@@ -704,7 +720,7 @@ int lerRegistroProfissao(Profissao* p, long* pos)
             variComProfissao++;
         }
         i++;
-        
+
     } while (1);
     //variComProfissao++;
     //fseek(arquivo_log, 0, SEEK_END);
@@ -720,37 +736,48 @@ void alocarRegistrosProfissao(Profissao* p)
     tamVetProfissao = variComProfissao;
 }
 
-int abrirArquivo(FILE** arquivo, const char* caminho)
+int abrirArquivo(FILE** arquivo, const char* caminho, const char modo)
 {
-    if((*arquivo = fopen(caminho, "r+")) == NULL)
+    if (modo == ARQUIVO_MODO_ESCREVER)
     {
-        while (1)
+        if((*arquivo = fopen(caminho, "w+")) == NULL)
         {
-            system("cls");
-            printf("Não foi possível abrir o arquivo \"%s\" \n", caminho);
-            printf("Deseja criar um novo? (S/N)\n");
-            char opcao;
-            scanf("%c", &opcao);
-
-            if (opcao == 's' || opcao == 'S')
-            {
-                if((*arquivo = fopen(caminho, "w+")) == NULL)
-                {
-                    printf("Não foi possível criar o arquivo \"%s\" \n", caminho);
-                    return 0;
-                }
-                printf("O arquivo foi criado com sucesso.\n");
-                return 1;
-            }
-            else if (opcao == 'n' || opcao == 'N')
-            {
-                break;
-            }
+            printf("Não foi possível criar o arquivo \"%s\" \n", caminho);
+            return 0;
         }
-
-        return 0;
+        printf("O arquivo foi criado com sucesso.\n");
+        return 1;
     }
+    else
+    {
+        if((*arquivo = fopen(caminho, "r+")) == NULL)
+        {
+            while (1)
+            {
+                system("cls");
+                printf("Não foi possível abrir o arquivo \"%s\" \n", caminho);
+                printf("Deseja criar um novo? (S/N)\n");
+                char opcao;
+                scanf("%c", &opcao);
 
+                if (opcao == 's' || opcao == 'S')
+                {
+                    if((*arquivo = fopen(caminho, "w+")) == NULL)
+                    {
+                        printf("Não foi possível criar o arquivo \"%s\" \n", caminho);
+                        return 0;
+                    }
+                    printf("O arquivo foi criado com sucesso.\n");
+                    return 1;
+                }
+                else if (opcao == 'n' || opcao == 'N')
+                {
+                    break;
+                }
+            }
+            return 0;
+        }
+    }
     return 1;
 }
 
