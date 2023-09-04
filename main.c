@@ -364,7 +364,6 @@ void pesquisarProf(Profissao* profissao){
         for(i=0; i<tamVetProfissao; i++){
             //Você pode usar atoi para converter uma string para int
             if(strcmp(op, profissao[i].nomeProf) == 0 || codigo == profissao[i].codProf || strcmp(op, profissao[i].siglaProf) == 0){
-                variComProfissao = profissao[i].codProf - codBaseProfissao;
                 printf("\n Nome da profissão: %s", profissao[i].nomeProf);
                 printf("\n Sigla da profissão: %s", profissao[i].siglaProf);
                 printf("\n Código da profissão: %d", profissao[i].codProf);
