@@ -11,7 +11,7 @@ int tamVetProfissao = 0; //tamanho atual do vetor de profissao
 int variComProfissional=1; //variavel de comando de medico
 int variComAten=1; //variavel de comando de atendimento
 
-const int codBaseProfissao = 2023100;
+const long codBaseProfissao = 2023000000;
 
 const char* OUT_PROFISSAO_FORMAT =
     "%d{nome:\"%s\",sigla:%s}\n";
@@ -104,12 +104,15 @@ int main(){
     }
     alocarRegistrosProfissao(profissoes);
 
-
-    int op, a=0;
+    int i, op, a=0;
 
     do{
         printf("varComProfissao: %d\n", variComProfissao); //REMOVA-ME
         printf("tamVetProfissao: %d\n", tamVetProfissao); //REMOVA-ME
+        for (i = 0; i < tamVetProfissao; i++)
+        {
+            printf("\n%d %s %s",profissoes[i].codProf, profissoes[i].nomeProf, profissoes[i].siglaProf);
+        }
         printf("\n--------------------------------------------------------BEM VINDO-------------------------------------------------------\n");
         printf("\n Pesquisar por:\n [1]Médico\n [2]Cliente\n [3]Atendimento\n [4]Profissão\n\n [5]Sair \n\n :");
         scanf("%d", &op);
@@ -298,31 +301,23 @@ void inserirProf(Profissao* profissao){
 
     while(1){
         system("cls");
-        for (i = 0; i <= 999; i++)
-        {
-            if (i = profissao)
-            i++;
-        }
-        for (i = 2023100; i <= tamVetProfissao; i++)
-        {
-            if (profissao[i].codProf == 0)
-            {
-                variComProfissao = i;
-            }
-        }
         printf("\n---------------------------------------------------INSIRIR PROFISSÃO---------------------------------------------------\n");
         printf("\nCodigo = %d\n", codBaseProfissao+variComProfissao);
         printf("\nInserir o nome da profissão: ");
-        scanf("%s", profissao[variComProfissao].nomeProf);
+        scanf("%s", profissao[tamVetProfissao].nomeProf);
 
         printf("\nInserir o sigla da profissão: ");
-        scanf("%s", profissao[variComProfissao].siglaProf);
+        scanf("%s", profissao[tamVetProfissao].siglaProf);
 
-        profissao[variComProfissao].codProf = codBaseProfissao+variComProfissao;
-        printf("\nCódigo da profissão:%d", profissao[variComProfissao].codProf);
+        profissao[tamVetProfissao].codProf = codBaseProfissao+variComProfissao;
+        printf("\nCódigo da profissão:%d", profissao[tamVetProfissao].codProf);
 
         tamVetProfissao++;
         variComProfissao++;
+        for (i = 0; i < tamVetProfissao; i++)
+        {
+            printf("\n%d %s %s",profissao[i].codProf, profissao[i].nomeProf, profissao[i].siglaProf);
+        }
         atualizarRegistroProfissao(profissao);
         printf("\n\n [0]Inserir outra profisssão\n [1]Voltar\n: ");
         scanf("%d", &op);
@@ -356,7 +351,6 @@ void pesquisarProf(Profissao* profissao){
         {
             if(!(op[ii] >= '0' && op[ii] < '9'))
             {
-                printf("%c", op[ii]);
                 eNumero = 0;
             }
             ii++;
@@ -364,7 +358,6 @@ void pesquisarProf(Profissao* profissao){
 
         if(eNumero)
         {
-            printf("\nÉ número");
             codigo = atoi(op);
         }
 
@@ -403,7 +396,6 @@ void removerProf(Profissao* profissao){
         {
             if(!(op[ii] >= '0' && op[ii] < '9'))
             {
-                printf("%c", op[ii]);
                 eNumero = 0;
             }
             ii++;
@@ -411,20 +403,22 @@ void removerProf(Profissao* profissao){
 
         if(eNumero)
         {
-            printf("\nÉ número");
             codigo = atoi(op);
         }
 
         for(i=0; i<tamVetProfissao; i++){
             //Você pode usar atoi para converter uma string para int
             if(strcmp(op, profissao[i].nomeProf) == 0 || codigo == profissao[i].codProf || strcmp(op, profissao[i].siglaProf) == 0){
+                printf("\nRemovendo\n%d\n%s\n%s\n", profissao[i].codProf, profissao[i].nomeProf, profissao[i].siglaProf);
                 memset(profissao[i].nomeProf, 0, sizeof(char[50]) );
                 memset(profissao[i].siglaProf, 0, sizeof(char[10]) );
                 profissao[i].codProf = 0;
-                atualizarRegistroProfissao(&profissao[i]);
+                atualizarRegistroProfissao(profissao);
+                tamVetProfissao--;
+                alocarRegistrosProfissao(profissao);
+                break;
             }
         }
-
         printf("\n\n [0]Ver outra profisssão\n [1]Voltar\n: ");
         scanf("%d", &a);
 
@@ -432,7 +426,7 @@ void removerProf(Profissao* profissao){
 }
 
 void editarProf(Profissao* profissao){
-   int i, ii = 0, a=0, b;
+   int i, ii = 0, a=0, opcao;
     char op[50], str[8];
     int codigo, eNumero;
 
@@ -440,17 +434,19 @@ void editarProf(Profissao* profissao){
         system("cls");
         printf("------------------------------------------------EDITAR PROFISSÃO-------------------------------------------------");
         printf("\nDigita algo para a identificar a profissão que você deseja editar (Nome, Sigla ou Código da Profissão)\n:");
+        fflush(stdin);
         scanf("%s", op);
         system("cls");
 
         eNumero = 1;
+        codigo = 0;
 
         //Verificando se op é número
+        ii = 0;
         while(ii < strlen(op))
         {
             if(!(op[ii] >= '0' && op[ii] < '9'))
             {
-                printf("%c", op[ii]);
                 eNumero = 0;
             }
             ii++;
@@ -458,31 +454,37 @@ void editarProf(Profissao* profissao){
 
         if(eNumero)
         {
-            printf("\nÉ número");
             codigo = atoi(op);
         }
 
-        for(i=0; i<variComProfissao; i++){
-            sprintf(str, "%d", profissao[i].codProf);
-            if(strcmp(op, profissao[i].nomeProf) == 0 || strcmp(op, str) == 0 || strcmp(op, profissao[i].siglaProf) == 0){
-                    printf("\nInforme qual dado você deseja alterar \n[1]Nome \n[2]Sigla\n:");
-                    scanf("%d", &b);
+        for(i=0; i<tamVetProfissao; i++){
+            if(strcmp(op, profissao[i].nomeProf) == 0 || codigo == profissao[i].codProf || strcmp(op, profissao[i].siglaProf) == 0){
+                printf("\nEditando\n%d\n%s\n%s\n", profissao[i].codProf, profissao[i].nomeProf, profissao[i].siglaProf);
+                printf("\nInforme qual dado você deseja alterar \n[1]Nome \n[2]Sigla \n[3]Voltar\n:");
+                scanf("%d", &opcao);
 
-                switch(b){
+                switch(opcao){
                 case 1:
                     printf("Digite o novo nome da profissão:");
                     scanf("%s", profissao[i].nomeProf);
-                    printf("Esse é o disciplina já alterado:%s", profissao[i].nomeProf);
-                break;
+                    printf("Esse é o nome já alterado:%s", profissao[i].nomeProf);
+                    i = tamVetProfissao;
+                    break;
                 case 2:
                     printf("Digite a nova sigla da profissão:");
-                    scanf("%s", profissao[i].nomeProf);
+                    scanf("%s", profissao[i].siglaProf);
                     printf("Esse é a sigla já alterada:%s", profissao[i].siglaProf);
-                break;
+                    i = tamVetProfissao;
+                    break;
+                case 3:
+                    break;
                 default:
                     system("cls");
                     continue;
                 }
+                atualizarRegistroProfissao(profissao);
+                alocarRegistrosProfissao(profissao);
+                
             }
         }
 
@@ -681,15 +683,20 @@ void atualizarRegistroProfissao(Profissao* p)
     char nome[50], sigla[10];
 
     fclose(arquivo_profissao);
-    abrirArquivo(arquivo_profissao, "regProfissao.txt", ARQUIVO_MODO_ESCREVER);
+    abrirArquivo(&arquivo_profissao, "regProfissao.txt", ARQUIVO_MODO_ESCREVER);
 
     for (i = 0; i < tamVetProfissao; i++)
     {
-        printf("Profissao %s foi registrada!\n", p[i].nomeProf);
-        registrarProfissao(&p[i]);
+        if (p[i].codProf != 0)
+        {
+            registrarProfissao(&p[i]);
+            printf("Profissao %d %s %s foi registrada!\n", p[i].codProf, p[i].nomeProf, p[i].siglaProf);
+        }
+            
     }
 
     fclose(arquivo_profissao);
+    abrirArquivo(&arquivo_profissao, "regProfissao.txt", ARQUIVO_MODO_LER);
 }
 
 void registrarProfissao(Profissao *p)
@@ -704,40 +711,49 @@ void registrarProfissao(Profissao *p)
 
 int lerRegistroProfissao(Profissao* p, long* pos)
 {
-    fseek(arquivo_profissao, (*pos), SEEK_SET);
-    int i = 0, mudarVariCom = 1;
+    if (tamVetProfissao != 0)
+    {
+        int i;
+        for (i = 0; i < tamVetProfissao; i++)
+        {
+            fscanf(arquivo_profissao, IN_PROFISSAO_FORMAT, &p[i].codProf, p[i].nomeProf, p[i].siglaProf);
+            if(p[i].codProf == 0)
+            {
+                i--;
+                continue;
+            }
+        }
+        return 0;
+    }
     do
     {
-        fscanf(arquivo_profissao, IN_PROFISSAO_FORMAT, &p[i].codProf, p[i].nomeProf, p[i].siglaProf);
-        printf("%d\n",p[i].codProf);
-        if (p[i].codProf == 0)
-        {
-            mudarVariCom = 0;
+        fscanf(arquivo_profissao, IN_PROFISSAO_FORMAT, &p[tamVetProfissao].codProf, p[tamVetProfissao].nomeProf, p[tamVetProfissao].siglaProf);
+        if(p[tamVetProfissao].codProf == 0)
             break;
-        }
-        if(mudarVariCom)
+        if (variComProfissao <= p[tamVetProfissao].codProf - codBaseProfissao)
         {
-            variComProfissao++;
-        }
-        i++;
-
+            variComProfissao = (p[tamVetProfissao].codProf - codBaseProfissao) + 1;
+        }   
+        tamVetProfissao++;
     } while (1);
-    //variComProfissao++;
-    //fseek(arquivo_log, 0, SEEK_END);
+    return 0;
 }
 
 void alocarRegistrosProfissao(Profissao* p)
 {
     long pos = 0;
-    fseek(arquivo_profissao, 0, SEEK_SET);
-    fprintf(arquivo_log, "Alocar Registro Profissao\n");
+    memset(p, 0, sizeof(p));
     printf("\n====================================\n");
     lerRegistroProfissao(p, &pos);
-    tamVetProfissao = variComProfissao;
 }
 
 int abrirArquivo(FILE** arquivo, const char* caminho, const char modo)
 {
+    if (!(*arquivo))
+    {
+        fclose(*arquivo);
+    }
+
     if (modo == ARQUIVO_MODO_ESCREVER)
     {
         if((*arquivo = fopen(caminho, "w+")) == NULL)
@@ -745,7 +761,7 @@ int abrirArquivo(FILE** arquivo, const char* caminho, const char modo)
             printf("Não foi possível criar o arquivo \"%s\" \n", caminho);
             return 0;
         }
-        printf("O arquivo foi criado com sucesso.\n");
+        printf("\nO arquivo foi criado com sucesso.\n");
         return 1;
     }
     else
