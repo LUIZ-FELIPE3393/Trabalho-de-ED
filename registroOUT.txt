@@ -1,3 +1,0 @@
-0-P(João, 32, MEDI)
-1-P(Paulo, 56, SAPA)
-
