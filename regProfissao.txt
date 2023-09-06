@@ -1,0 +1,5 @@
+2023000000{nome:"Medico",sigla:MD}
+2023000001{nome:"Enfermeira",sigla:EF}
+2023000002{nome:"Recepcionista",sigla:RC}
+2023000003{nome:"Gerente",sigla:GR}
+2023000010{nome:"Zelador",sigla:ZL}
