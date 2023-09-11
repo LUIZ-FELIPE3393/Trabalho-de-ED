@@ -414,7 +414,7 @@ void pesquisarProfissional(Profissional* profissional){
 
         for(i=0; i<tamVetProfissional; i++){
             //Voc� pode usar atoi para converter uma string para int
-            if(codigo == profissional[i].numRegP || codigo == profissional[i].matricula || strcmp(op, profissional[i].nome) == 0) || codigo == profissional[i].cpf){
+            if(codigo == profissional[i].numRegP || codigo == profissional[i].matricula || (strcmp(op, profissional[i].nome) == 0) || (strcmp(op, profissional[i].cpf))){
                 printf("\n Nome do profissional: %s", profissional[i].nome);
                 printf("\n Data de nascimento do profissional: %d/%d/%d", profissional[i].dataNasc.dia, profissional[i].dataNasc.mes, profissional[i].dataNasc.ano);
                 printf("\n Cpf do profissional: %s", profissional[i].cpf);
