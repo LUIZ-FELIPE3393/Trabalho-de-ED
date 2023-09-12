@@ -6,16 +6,16 @@
 
 #define TAM_MAX 512
 
-int variComProfissao = 0; //vari�vel de comando de profiss�o
-int tamVetProfissao = 0; //tamanho atual do vetor de profiss�o
+int variComProfissao = 0; //variável de comando de profissão
+int tamVetProfissao = 0; //tamanho atual do vetor de profissão
 
-int variComProfissional=0; //vari�vel de comando de m�dico
+int variComProfissional=0; //variável de comando de médico
 int tamVetProfissional=0;
 
-int variComAten = 0; //vari�vel de comando de atendimento
+int variComAten = 0; //variável de comando de atendimento
 int tamVetAten = 0; //tamanho atual do vetor de atendimento
 
-int variComCliente = 0; //vari�vel de comando de cliente
+int variComCliente = 0; //variável de comando de cliente
 int tamVetCliente = 0;
 
 
@@ -119,6 +119,14 @@ void pesquisarCliente(Cliente* cliente);
 void editarCliente(Cliente* cliente);
 void removerCliente(Cliente* cliente);
 
+void relatorioListaProfissionais(Profissional* p);
+void relatorioListaProfissionaisAniversariantes(Profissional* p);
+void relatorioAtendimentoGeral(Atendimento* a);
+void relatorioAtendimentoGeralPeriodo(Atendimento* a);
+void relatorioAtendimentoGeralMes(Atendimento* a);
+void relatorioEstatisticaProfissionalAtendimentos(Profissional* p, Atendimento* a);
+void relatorioListaClientesAniversariantes(Cliente* c);
+
 int abrirArquivo(FILE** arquivo, const char* caminho, const char modo);
 
 void gerarProf(Profissao* p);
@@ -156,7 +164,7 @@ int main(){
     abrirArquivo(&arquivo_cliente, "regCliente.txt", ARQUIVO_MODO_LER);
     if((arquivo_log = fopen("log.txt", "w")) == NULL)
     {
-        printf("N�o foi poss�vel criar o arquivo \"log.txt\" \n");
+        printf("Não foi possível criar o arquivo \"log.txt\" \n");
         return 0;
     }
     alocarRegistroProfissao(profissoes);
