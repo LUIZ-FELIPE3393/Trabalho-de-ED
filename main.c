@@ -224,11 +224,11 @@ void menuProfissionais  (Profissional* profissional){
             break;
 
         case 3:
-            //Fun��o para editar informa��es dos m�dicos
+            editarProfissional(profissional);
             break;
 
         case 4:
-            //Fun��o para remover m�dico
+            removerProfissional(profissional);
             break;
 
         case 5:
@@ -414,7 +414,7 @@ void pesquisarProfissional(Profissional* profissional){
 
         for(i=0; i<tamVetProfissional; i++){
             //Voc� pode usar atoi para converter uma string para int
-            if(codigo == profissional[i].numRegP || codigo == profissional[i].matricula || (strcmp(op, profissional[i].nome) == 0) || (strcmp(op, profissional[i].cpf))){
+            if(codigo == profissional[i].numRegP || codigo == profissional[i].matricula || strcmp(op, profissional[i].nome) == 0 || codigo == profissional[i].cpf){
                 printf("\n Nome do profissional: %s", profissional[i].nome);
                 printf("\n Data de nascimento do profissional: %d/%d/%d", profissional[i].dataNasc.dia, profissional[i].dataNasc.mes, profissional[i].dataNasc.ano);
                 printf("\n Cpf do profissional: %s", profissional[i].cpf);
@@ -433,10 +433,8 @@ void pesquisarProfissional(Profissional* profissional){
 
     }while(a<1);
 }
-
 void inserirProfissional(Profissional* profissional){
      int i, op=1;
-
     while(1){
         system("cls");
         printf("\n---------------------------------------------------INSERIR PROFISSIONAL---------------------------------------------------\n");
@@ -494,6 +492,60 @@ void inserirProfissional(Profissional* profissional){
         }
     }
 }
+void removerProfissional(Profissional* profissional){
+    //a
+    int i, ii=0, a=0;
+    char op[50], str[8];
+    int codigo, eNumero;
+
+    do{
+        system("cls");
+        printf("-------------------------------------------------REMOVER PROFISSIONAL-------------------------------------------------");
+        printf("\nDigita algo para identificar o profissional que você deseja remover (Nome, Cpf, Matrícula ou Registro do Profissional):\n");
+        scanf("%s", op);
+        system("cls");
+
+        eNumero = 1;
+
+        while(ii < strlen(op))
+        {
+            if(!(op[ii] >= '0' && op[ii] < '9'))
+            {
+                eNumero = 0;
+            }
+            ii++;
+        }
+               if(eNumero)
+        {
+            codigo = atoi(op);
+        }
+
+        for(i=0; i<tamVetProfissional; i++){
+            //Voc� pode usar atoi para converter uma string para int
+            if(codigo == profissional[i].numRegP || codigo == profissional[i].matricula || strcmp(op, profissional[i].nome) == 0 || codigo == profissional[i].cpf){
+                memset(profissional[i].cpf, 0, sizeof(char[11]));
+                memset(profissional[i].nome, 0, sizeof(char[50]));
+                memset(profissional[i].email, 0, sizeof(char[50]));
+                memset(profissional[i].tipo, 0,sizeof(char[50]));
+                memset(profissional[i].fone, 0,sizeof(char[15]));
+                profissional[i].numRegP = 0;
+                profissional[i].matricula = 0;
+                profissional[i].codProf = 0;
+                profissional[i].dataNasc.dia = 0;
+                profissional[i].dataNasc.mes = 0;
+                profissional[i].dataNasc.ano = 0;
+
+                atualizarRegistroProfissao(profissional);
+                tamVetProfissional--;
+                alocarRegistroProfissional(profissional);
+                break;
+            }
+        }
+        printf("\n\n [0]Remover outro profissional\n [1]Voltar\n: ");
+        scanf("%d", &a);
+
+    }while(a<1);
+}
 
 void editarProfissional(Profissional* profissional){
     int i, ii = 0, a=0, opcao;
@@ -527,10 +579,9 @@ void editarProfissional(Profissional* profissional){
             codigo = atoi(op);
         }
 
-        for(i=0; i<tamVetProfissao; i++){
-            if(strcmp(op, profissao[i].nomeProf) == 0 || codigo == profissao[i].codProf || strcmp(op, profissao[i].siglaProf) == 0){
-                printf("\nEditando\n%d\n%s\n%s\n", profissao[i].codProf, profissao[i].nomeProf, profissao[i].siglaProf);
-                printf("\nInforme qual dado voc� deseja alterar \n[1]Nome \n[2]Sigla \n[3]Voltar\n:");
+        for(i=0; i<tamVetProfissional; i++){
+            if(codigo == profissional[i].numRegP || codigo == profissional[i].matricula || strcmp(op, profissional[i].nome) == 0 || codigo == profissional[i].cpf){
+                printf("\nInforme qual dado voc� deseja alterar \n[1]Nome \n \n[2]Sigla \n[3]Voltar\n:");
                 scanf("%d", &opcao);
 
                 switch(opcao){
