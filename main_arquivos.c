@@ -113,11 +113,13 @@ void pesquisarProfissional(Profissional* profissional);
 void inserirProfissional(Profissional* profissional);
 void editarProfissional(Profissional* profissional);
 void removerProfissional(Profissional* profissional);
+Profissional getProfissional(Profissional* p, int matricula);
 
 void inserirCliente(Cliente* cliente);
 void pesquisarCliente(Cliente* cliente);
 void editarCliente(Cliente* cliente);
 void removerCliente(Cliente* cliente);
+Cliente getCliente(Cliente* c, int codigo);
 
 void relatorioListaProfissionais(Profissional* p);
 void relatorioListaProfissionaisAniversariantes(Profissional* p);
@@ -1349,6 +1351,69 @@ void pesquisarCliente(Cliente* cliente){
     }while(a<1);
  }
 
+/*
+======Módulo Relatórios======
+*/
+
+void menuRelatorios(Profissional* p, Cliente* c, Atendimento* a)
+{
+    relatorioAtendimentoGeral(p, c, a);
+}
+
+void relatorioListaProfissionais(Profissional* p)
+{
+
+}
+
+void relatorioListaProfissionaisAniversariantes(Profissional* p)
+{
+
+}
+
+void relatorioAtendimentoGeral(Profissional* p, Cliente* c, Atendimento* a)
+{
+    int i;
+    system("cls");
+    printf("------------------------------------------------ATENDIMENTOS GERAIS------------------------------------------------");
+    for ( i = 0; i < tamVetAten; i++ )
+    {
+        Cliente cliente = getCliente(c, a[i].codClien);
+        Profissional profissional = getProfissional(p, a[i].matAten);
+
+        if (cliente.codigo == 0)
+        {
+            printf("Erro ao exibir informações\n");
+            continue;
+        }
+
+        printf("\nCliente: %s | Profissional: %s | Data:%d/%d/%d", cliente.nome, profissional.nome, a[i].dataAten.dia, a[i].dataAten.mes, a[i].dataAten.ano);
+        printf("\n");
+        
+    }
+
+    system("pause");
+}
+
+void relatorioAtendimentoGeralPeriodo(Profissional* p, Cliente* c, Atendimento* a)
+{
+
+}
+
+void relatorioAtendimentoGeralMes(Atendimento* a)
+{
+
+}
+
+void relatorioEstatisticaProfissionalAtendimentos(Profissional* p, Atendimento* a)
+{
+
+}
+
+void relatorioListaClientesAniversariantes(Cliente* c)
+{
+
+}
+
  /*
 ======M�dulo Arquivos======
 */
@@ -1722,4 +1787,37 @@ void atualizarRegistroCliente(Cliente* c)
 
     fclose(arquivo_cliente);
     abrirArquivo(&arquivo_cliente, "regCliente.txt", ARQUIVO_MODO_LER);
+}
+
+Profissional getProfissional(Profissional* p, int matricula)
+{
+    int i;
+    
+    for (i = 0; i < tamVetProfissional; i++)
+    {
+        if (matricula == p[i].matricula)
+        {
+            return p[i];
+        }
+    }
+
+    Profissional profissional;
+    return profissional;
+}
+
+Cliente getCliente(Cliente* c, int codigo)
+{
+    int i;
+    
+    for (i = 0; i < tamVetCliente; i++)
+    {
+        if (codigo == c[i].codigo)
+        {
+            printf("\n>>>Cliente: %s >", c[i].nome);
+            return c[i];
+        }
+    }
+
+    Cliente cliente;
+    return cliente;
 }
