@@ -95,9 +95,10 @@ typedef struct{
 }Atendimento;
 
 void menuProfissionais (Profissional* profissional);
-void menuClientes ();
+void menuClientes (Cliente* cliente);
 void menuProfissao (Profissao* profissao);
 void menuAtendimentos (Atendimento* atendimento);
+void menuRelatorios(Profissional* p, Cliente* c, Atendimento* a);
 
 void pesquisarAten(Atendimento* atendimento);
 void inserirAten(Atendimento* atendimento);
@@ -123,8 +124,8 @@ Cliente getCliente(Cliente* c, int codigo);
 
 void relatorioListaProfissionais(Profissional* p);
 void relatorioListaProfissionaisAniversariantes(Profissional* p);
-void relatorioAtendimentoGeral(Atendimento* a);
-void relatorioAtendimentoGeralPeriodo(Atendimento* a);
+void relatorioAtendimentoGeral(Profissional* p, Cliente* c, Atendimento* a);
+void relatorioAtendimentoGeralPeriodo(Profissional* p, Cliente* c, Atendimento* a);
 void relatorioAtendimentoGeralMes(Atendimento* a);
 void relatorioEstatisticaProfissionalAtendimentos(Profissional* p, Atendimento* a);
 void relatorioListaClientesAniversariantes(Cliente* c);
@@ -178,7 +179,7 @@ int main(){
 
     do{
         printf("\n--------------------------------------------------------BEM VINDO-------------------------------------------------------\n");
-        printf("\nIr para o menu de:\n [1]Profissional\n [2]Cliente\n [3]Atendimento\n [4]Profiss�o\n\n [5]Sair \n\n :");
+        printf("\nIr para o menu de:\n [1]Profissional\n [2]Cliente\n [3]Atendimento\n [4]Profissão\n [5]Relatórios\n\n [6]Sair \n\n :");
         scanf("%d", &op);
 
         switch(op){
@@ -203,6 +204,11 @@ int main(){
             break;
 
         case 5:
+            menuRelatorios(profissionais, cliente, atendimento);
+            system("cls");
+            break;
+
+        case 6:
             a=1;
             break;
 
@@ -849,7 +855,7 @@ void editarProf(Profissao* profissao){
         system("cls");
         printf("-------------------------------------------------PESQUISAR POR ATENDIMENTO-------------------------------------------------");
 
-        printf("\nDigita algo para a pesquisa (Matr�cula ou n�mero do atendimento)\n:");
+        printf("\nDigita algo para a pesquisa (Matrícula ou número do atendimento)\n:");
         scanf("%d", &op);
 
         system("cls");
@@ -858,8 +864,9 @@ void editarProf(Profissao* profissao){
             if(op == atendimento[i].matAten || op == atendimento[i].numero){
                 printf("\n Data do atendimento: %d/%d/%d", atendimento[i].dataAten.dia, atendimento[i].dataAten.mes, atendimento[i].dataAten.ano);
                 printf("\n Atendimento:\n %s\n", atendimento[i].aten);
-                printf("\n Matr�cula do atendimento: %d", atendimento[i].matAten);
-                printf("\n N�mero do atendimento: %d", atendimento[i].numero);
+                printf("\n Matrícula do atendimento: %d", atendimento[i].matAten);
+                printf("\n Cliente do atendimento: %d", atendimento[i].codClien);
+                printf("\n Número do atendimento: %d", atendimento[i].numero);
                 break;
             }
         }
@@ -897,14 +904,14 @@ void editarProf(Profissao* profissao){
 
         system("cls");
 
-        printf("Matr�cula do profissional:");
+        printf("Matrícula do profissional:");
         scanf("%ld", &atendimento[tamVetAten].matAten);
 
-        printf("C�digo do cliente:");
+        printf("Código do cliente:");
         scanf("%ld", &atendimento[tamVetAten].codClien);
 
         atendimento[tamVetAten].numero = variComAten + numBaseAten;
-        printf("\n N�mero do atendimento: %d", atendimento[tamVetAten].numero);
+        printf("\n Número do atendimento: %d", atendimento[tamVetAten].numero);
 
         tamVetAten++;
         variComAten++;
@@ -1116,7 +1123,7 @@ void pesquisarCliente(Cliente* cliente){
         system("cls");
         printf("-------------------------------------------------PESQUISAR POR CLIENTE-------------------------------------------------");
 
-        printf("\nDigita algo para a pesquisa (C�digo, n�mero do celular, email ou nome do cliente)\n:");
+        printf("\nDigita algo para a pesquisa (Código, número do celular, email ou nome do cliente)\n:");
         fflush(stdin);
         scanf("%[^\n]", op);
         fflush(stdin);
@@ -1351,22 +1358,56 @@ void pesquisarCliente(Cliente* cliente){
     }while(a<1);
  }
 
-/*
+ /*
 ======Módulo Relatórios======
 */
 
 void menuRelatorios(Profissional* p, Cliente* c, Atendimento* a)
 {
-    relatorioAtendimentoGeral(p, c, a);
+    relatorioAtendimentoGeralMes(a);
 }
 
 void relatorioListaProfissionais(Profissional* p)
 {
+    int i;
+    for(i=0; i<tamVetProfissional; i++){
+        printf("--------PROFISSIONAIS--------");
+        printf("\n\n Nome do profissional: %s", p[i].nome);
+        printf("\n Data de nascimento do profissional: %d/%d/%d", p[i].dataNasc.dia, p[i].dataNasc.mes, p[i].dataNasc.ano);
+        printf("\n Cpf do profissional: %s", p[i].cpf);
+        printf("\n Email do profissional: %s", p[i].email);
+        printf("\n Telefone do profissional: %s", p[i].fone);
+        printf("\n Profissão do profissional: %s", p[i].tipo);
+        printf("\n Código da profissão do profissional: %d", p[i].codProf);
+        printf("\n Cpf do profissional: %s", p[i].cpf);
+        printf("\n Matrícula do atendimento do profissional: %s", p[i].cpf);
+        printf("\n Número de registro do profissional: %d", p[i].numRegP);
+    }
 
+    system("pause");
 }
 
-void relatorioListaProfissionaisAniversariantes(Profissional* p)
-{
+void relatorioListaProfissionaisAniversariantes(Profissional* profissional){
+    int tm_mday, tm_mon, tm_year, i, a;
+
+    system("cls");
+
+    for(i=0; i<tamVetProfissional; i++){
+        if(profissional[i].dataNasc.dia == tm_mday && profissional[i].dataNasc.mes == tm_mon && profissional[i].dataNasc.ano == tm_year )
+        {
+            printf("------PROFISSIONAIS ANIVERSARIANTES------");
+            printf("\n\n Nome do profissional: %s", profissional[i].nome);
+            printf("\n Data de nascimento do profissional: %d/%d/%d", profissional[i].dataNasc.dia, profissional[i].dataNasc.mes, profissional[i].dataNasc.ano);
+            printf("\n Cpf do profissional: %s", profissional[i].cpf);
+            printf("\n Email do profissional: %s", profissional[i].email);
+            printf("\n Telefone do profissional: %s", profissional[i].fone);
+            printf("\n Profissão do profissional: %s", profissional[i].tipo);
+            printf("\n Código da profissão do profissional: %d", profissional[i].codProf);
+            printf("\n Cpf do profissional: %s", profissional[i].cpf);
+            printf("\n Matrícula do atendimento do profissional: %s", profissional[i].cpf);
+            printf("\n Número de registro do profissional: %d", profissional[i].numRegP);
+        }
+    }  
 
 }
 
@@ -1382,7 +1423,7 @@ void relatorioAtendimentoGeral(Profissional* p, Cliente* c, Atendimento* a)
 
         if (cliente.codigo == 0)
         {
-            printf("Erro ao exibir informações\n");
+            printf("\nErro ao exibir informações");
             continue;
         }
 
@@ -1396,12 +1437,82 @@ void relatorioAtendimentoGeral(Profissional* p, Cliente* c, Atendimento* a)
 
 void relatorioAtendimentoGeralPeriodo(Profissional* p, Cliente* c, Atendimento* a)
 {
+    int i;
+    system("cls");
+    printf("-----------------------------------------ATENDIMENTOS GERAIS POR PERÍODO------------------------------------------------");
+
+    Data dataMin, dataMax;
+
+    printf("\nDigite o dia mínimo: ");
+    scanf("%d", &dataMin.dia);
+    printf("\nDigite o mês mínimo: ");
+    scanf("%d", &dataMin.mes);
+    printf("\nDigite o ano mínimo: ");
+    scanf("%d", &dataMin.ano);
+
+    printf("\nDigite o dia máximo: ");
+    scanf("%d", &dataMax.dia);
+    printf("\nDigite o mês máximo: ");
+    scanf("%d", &dataMax.mes);
+    printf("\nDigite o ano máximo: ");
+    scanf("%d", &dataMax.ano);
+
+
+    for ( i = 0; i < tamVetAten; i++ )
+    {
+        if (a[i].dataAten.ano < dataMin.ano && a[i].dataAten.ano > dataMax.ano)
+        {
+            if (a[i].dataAten.mes < dataMin.mes && a[i].dataAten.mes > dataMax.mes)
+            {
+                if (a[i].dataAten.dia < dataMin.dia && a[i].dataAten.dia > dataMax.dia)
+                {
+                    continue;
+                }
+            }
+        }
+
+        Cliente cliente = getCliente(c, a[i].codClien);
+        Profissional profissional = getProfissional(p, a[i].matAten);
+
+        if (cliente.codigo == 0)
+        {
+            printf("\nErro ao exibir informações");
+            continue;
+        }
+
+        printf("\nCliente: %s | Profissional: %s | Data:%d/%d/%d", cliente.nome, profissional.nome, a[i].dataAten.dia, a[i].dataAten.mes, a[i].dataAten.ano);
+        printf("\n");
+        
+    }
+    system("pause");
 
 }
 
 void relatorioAtendimentoGeralMes(Atendimento* a)
 {
+    int i, atensMes[12];
+    memset(&atensMes, 0, sizeof(int)*12);
+    Data data;
 
+    system("cls");
+    printf("-----------------------------------------ATENDIMENTOS GERAIS POR MÊS------------------------------------------------");
+    printf("\nDigite o ano: ");
+    scanf("%d", &data.ano);
+
+    for ( i = 0; i < tamVetAten; i++ )
+    {
+        if (a[i].dataAten.ano == data.ano)
+        {
+            atensMes[ a[i].dataAten.mes-1 ]++;
+        }
+            
+    }
+
+    printf("\n%d\n", data.ano);
+    printf("\nJAN: %d\nFEV: %d\nMAR: %d\nABR: %d\nMAI: %d\nJUN: %d\nJUL: %d\nAGO: %d\nSET: %d\nOUT: %d\nNOV: %d\nDEZ: %d\n", 
+        atensMes[0], atensMes[1], atensMes[2], atensMes[3], atensMes[4], atensMes[5], atensMes[6], atensMes[7], atensMes[8], atensMes[9], atensMes[10], atensMes[11]);
+
+    system("pause");
 }
 
 void relatorioEstatisticaProfissionalAtendimentos(Profissional* p, Atendimento* a)
@@ -1415,7 +1526,7 @@ void relatorioListaClientesAniversariantes(Cliente* c)
 }
 
  /*
-======M�dulo Arquivos======
+======Módulo Arquivos======
 */
 int abrirArquivo(FILE** arquivo, const char* caminho, const char modo)
 {
@@ -1428,7 +1539,7 @@ int abrirArquivo(FILE** arquivo, const char* caminho, const char modo)
     {
         if((*arquivo = fopen(caminho, "w+")) == NULL)
         {
-            printf("N�o foi poss�vel criar o arquivo \"%s\" \n", caminho);
+            printf("Não foi possível criar o arquivo \"%s\" \n", caminho);
             return 0;
         }
         printf("\nO arquivo foi criado com sucesso.\n");
@@ -1441,7 +1552,7 @@ int abrirArquivo(FILE** arquivo, const char* caminho, const char modo)
             while (1)
             {
                 system("cls");
-                printf("N�o foi poss�vel abrir o arquivo \"%s\" \n", caminho);
+                printf("Não foi possível abrir o arquivo \"%s\" \n", caminho);
                 printf("Deseja criar um novo? (S/N)\n");
                 char opcao;
                 scanf("%c", &opcao);
@@ -1450,7 +1561,7 @@ int abrirArquivo(FILE** arquivo, const char* caminho, const char modo)
                 {
                     if((*arquivo = fopen(caminho, "w+")) == NULL)
                     {
-                        printf("N�o foi poss�vel criar o arquivo \"%s\" \n", caminho);
+                        printf("Não foi possível criar o arquivo \"%s\" \n", caminho);
                         return 0;
                     }
                     printf("O arquivo foi criado com sucesso.\n");
@@ -1662,7 +1773,6 @@ void alocarRegistroProfissional(Profissional* p)
     }
     do
     {
-        //"%d{cpf:\"%[^\"]\",nome:\"%[^\"]\",codProf:\"%d\",numRegP:\"%d\",dataNasc:%d/%d/%d,email:\"%[^\"]\",fone:%[^}]}\n";
         fscanf(arquivo_profissional, IN_PROFISSIONAL_FORMAT, &p[tamVetProfissional].matricula, p[tamVetProfissional].cpf, p[tamVetProfissional].nome,
             &p[tamVetProfissional].codProf, &p[tamVetProfissional].numRegP, &p[tamVetProfissional].dataNasc.dia,
             &p[tamVetProfissional].dataNasc.mes, &p[tamVetProfissional].dataNasc.ano, p[tamVetProfissional].email, p[tamVetProfissional].fone);
