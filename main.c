@@ -586,24 +586,81 @@ void editarProfissional(Profissional* profissional){
 
                 switch(opcao){
                 case 1:
-                    printf("Digite o novo nome da profiss�o:");
-                    scanf("%s", profissao[i].nomeProf);
-                    printf("Esse � o nome j� alterado:%s", profissao[i].nomeProf);
-                    i = tamVetProfissao;
+                    system("cls");
+                    printf("Digite o novo nome:");
+                    scanf("%s", &profissional[i].nome);
+                    printf("Esse � o nome j� alterado:%s", profissional[i].nome);
+                    i = tamVetProfissional;
                     break;
+
                 case 2:
-                    printf("Digite a nova sigla da profiss�o:");
-                    scanf("%s", profissao[i].siglaProf);
-                    printf("Esse � a sigla j� alterada:%s", profissao[i].siglaProf);
-                    i = tamVetProfissao;
+                    system("cls");
+                    printf("Digite o novo CPF:");
+                    scanf("%s", &profissional[i].cpf);
+                    printf("Esse é o novo CPF regsitrado:%s", profissional[i].cpf);
+                    i = tamVetProfissional;
                     break;
+
+                case 3:
+                    system("cls");
+                	printf("Digite novo e-mail:");
+                	scanf("%s", &profissional[i].email);
+                	printf("Esse � o novo e-mail registrado:%s", profissional[i].email);
+                	i = tamVetProfissional;
+                	break;
+
+                case 4:
+                    system("cls");
+                	printf("Digite o novo n�mero de telefone:");
+                	scanf("%s", &profissional[i].fone);
+                	printf("Esse � o n�mero de celular novo:%s", profissional[i].fone);
+                    i = tamVetProfissional;
+                    break;
+
+                case 5:
+                    system("cls");
+                    printf("\n Digite a nova data de nascimento:");
+                
+                    printf("\n Ano:");
+                    scanf("%d", &profissional[i].dataNasc.ano);
+
+                    printf("\nMês:");
+                    scnaf("%d", &profissional[i].dataNasc.mes);
+
+                    printf("\n Dia:");
+                    scanf("%d", &profissional[i].dataNasc.dia);
+
+                    printf("\nEssa é a data de nascimento alterada:%d/%d/%d", profissional[i].dataNasc.dia, profissional[i].dataNasc.mes, profissional[i].dataNasc.ano);
+                    break;
+
+                case 6:
+                    system("cls");
+                    printf("Digite a nova profissão:");
+                    scanf("%s", &profissional[i].tipo);
+                    printf("\nEssa é a profissão alterada: %s", profissional[i].tipo);
+                    break;
+                
+                case 7:
+                system("cls");
+                printf("Digite o novo número de registro:");
+                scanf("%s", &profissional[i].numRegP);
+                printf("\nEsse é o número de registro alterado:%s", profissional[i].numRegP);
+                break;
+
+                case 8:
+                system("cls");
+                printf("Digite o novo código de profissão:");
+                scanf("%d", &profissional[i].codProf);
+                printf("\nEsse é o novo código de profissão:%d", profissional[i].codProf);
+                break;
+
                 case 9:
                     break;
                 default:
                     system("cls");
                     continue;
                 }
-                atualizarRegistroProfissao(profissao);
+                atualizarRegistroProfissional(profissional);
 
             }
         }
