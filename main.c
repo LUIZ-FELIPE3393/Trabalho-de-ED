@@ -581,7 +581,7 @@ void editarProfissional(Profissional* profissional){
 
         for(i=0; i<tamVetProfissional; i++){
             if(codigo == profissional[i].numRegP || codigo == profissional[i].matricula || strcmp(op, profissional[i].nome) == 0 || codigo == profissional[i].cpf){
-                printf("\nInforme qual dado voc� deseja alterar \n[1]Nome \n \n[2]Sigla \n[3]Voltar\n:");
+                printf("\nInforme qual dado você deseja alterar \n[1]Nome \n[2]CPF \n[3]E-mail \n[4]Número de Telefone \n[5]Data de nascimento \n[6]Tipo de Profissão \n[7]Número de Registro \n[8]Código de profissão \n[9]Voltar\n:");
                 scanf("%d", &opcao);
 
                 switch(opcao){
@@ -597,7 +597,7 @@ void editarProfissional(Profissional* profissional){
                     printf("Esse � a sigla j� alterada:%s", profissao[i].siglaProf);
                     i = tamVetProfissao;
                     break;
-                case 3:
+                case 9:
                     break;
                 default:
                     system("cls");
