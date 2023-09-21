@@ -179,7 +179,7 @@ int main(){
 
     do{
         printf("\n--------------------------------------------------------BEM VINDO-------------------------------------------------------\n");
-        printf("\nIr para o menu de:\n [1]Profissional\n [2]Cliente\n [3]Atendimento\n [4]Profissão\n [5]Relatórios\n\n [6]Sair \n\n :");
+        printf("\nIr para o menu de:\t [1]Profissional\t [2]Cliente\t [3]Atendimento\t [4]Profissão\t [5]Relatórios\n\n[6]Sair \n\n:");
         scanf("%d", &op);
 
         switch(op){

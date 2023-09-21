@@ -263,7 +263,7 @@ void menuClientes (Cliente* cliente){
     do{
         system("cls");
         printf("\n----------------------------------------------------MENU DE CLIENTES----------------------------------------------------\n");
-        printf("\n [1]Pesquisar por cliente\n [2]Inserir cliente\n [3]Editar informa��es de um cliente\n [4]Remover cliente\n\n [5]Voltar \n\n :");
+        printf("\nIr para o menu de:\t [1]Profissional\t [2]Cliente\t [3]Atendimento\t [4]Profissão\t [5]Relatórios\n\n[6]Sair \n\n:");
         scanf("%d", &op);
 
         switch(op){
