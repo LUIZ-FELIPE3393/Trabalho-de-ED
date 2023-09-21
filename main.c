@@ -1363,8 +1363,45 @@ void pesquisarCliente(Cliente* cliente){
 
 void menuRelatorios(Profissional* p, Cliente* c, Atendimento* a)
 {
-    system("cls");
-    relatorioEstatisticaProfissionalAtendimentos(p, a);
+int op, d=0;
+
+    do{
+        system("cls");
+
+        printf("[0]Lista de profissionais\n[[1]Lista de profissionais aniversariantes\n[2]Lista de atendimentos gerais\n[3]Lista de atendimentos gerais em um periodo determinado\n[4]Lista de atendimento gerais do mês\n[5]Lista de estatisticas de atendimento dos profissionais\n[6]Lista de clientes aniversariantes\n[7]Voltar");
+        scanf("%d", &op);
+
+        switch(op){
+        case 0:
+            relatorioListaProfissionais(p);
+            break;
+        case 1:
+            relatorioListaProfissionaisAniversariantes(p);
+            break;
+        case 2:
+            relatorioAtendimentoGeral(p, c, a);
+            break;
+        case 3:
+            relatorioAtendimentoGeralPeriodo(p, c, a);
+            break;
+        case 4:
+            relatorioAtendimentoGeralMes(a);
+            break;
+        case 5:
+            relatorioEstatisticaProfissionalAtendimentos(p, a);
+            break;
+        case 6:
+            relatorioListaClientesAniversariantes(c);
+            break;
+        case 7:
+            d=1;
+            break;
+        default:
+            system("cls");
+            continue;
+            break;
+        }
+    }while(d<1);
 }
 
 void relatorioListaProfissionais(Profissional* p)
