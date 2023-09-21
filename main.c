@@ -1457,7 +1457,7 @@ void relatorioListaProfissionaisAniversariantes(Profissional* p){
     for(i=0; i<tamVetProfissional; i++){
         if(p[i].dataNasc.dia == dia && p[i].dataNasc.mes == mes)
         {
-            printf("\n Matrícula:      %s", p[i].matricula);
+            printf("\n Matrícula:      %d", p[i].matricula);
             printf("\n Nome:           %s", p[i].nome);
             printf("\n Data Nasc.:     %d/%d/%d", p[i].dataNasc.dia, p[i].dataNasc.mes, p[i].dataNasc.ano);
             printf("\n Cpf:            %s", p[i].cpf);
