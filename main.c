@@ -1,28 +1,31 @@
 /*
 
-Luiz Felipe Oliveira Dutra da Costa, Guilherme Marques Bezerra, Vinicius de Oliveira Santiago
+Luiz Felipe Oliveira Dutra da Costa,
+Guilherme Marques Bezerra,
+Vinicius de Oliveira Santiago.
 
 */
-
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
 #include <time.h>
+#include <conio.h>
+#include <windows.h>
 
 #define TAM_MAX 512
 
-int variComProfissao = 0; //vari√°vel de comando de profiss√£o
-int tamVetProfissao = 0; //tamanho atual do vetor de profiss√£o
+int variComProfissao = 0; //vari·vel de comando de profiss„o
+int tamVetProfissao = 0; //tamanho atual do vetor de profiss„o
 
-int variComProfissional=0; //vari√°vel de comando de m√©dico
+int variComProfissional=0; //vari·vel de comando de mÈdico
 int tamVetProfissional=0;
 
-int variComAten = 0; //vari√°vel de comando de atendimento
+int variComAten = 0; //vari·vel de comando de atendimento
 int tamVetAten = 0; //tamanho atual do vetor de atendimento
 
-int variComCliente = 0; //vari√°vel de comando de cliente
+int variComCliente = 0; //vari·vel de comando de cliente
 int tamVetCliente = 0;
 
 
@@ -44,10 +47,10 @@ const char* IN_ATENDIMENTO_FORMAT =
     "%d{matricula:\"%d\",cliente:\"%d\",data:%d/%d/%d,descricao:\"%[^\"]\"}\n";
 
 const char* OUT_PROFISSIONAL_FORMAT =
-    "%d{cpf:\"%s\",nome:\"%s\",codProf:\"%d\",numRegP:\"%d\",dataNasc:%d/%d/%d,email:\"%s\",fone:%s}\n";
+    "%d{cpf:\"%s\",nome:\"%s\",codProf:\"%d\",tipo:\"%s\",numRegP:\"%d\",dataNasc:%d/%d/%d,email:\"%s\",fone:%s}\n";
 
 const char* IN_PROFISSIONAL_FORMAT =
-    "%d{cpf:\"%[^\"]\",nome:\"%[^\"]\",codProf:\"%d\",numRegP:\"%d\",dataNasc:%d/%d/%d,email:\"%[^\"]\",fone:%[^}]}\n";
+    "%d{cpf:\"%[^\"]\",nome:\"%[^\"]\",codProf:\"%d\",tipo:\"%[^\"]\",numRegP:\"%d\",dataNasc:%d/%d/%d,email:\"%[^\"]\",fone:%[^}]}\n";
 
 const char* OUT_CLIENTE_FORMAT =
     "%d{nome:\"%s\",dataNasc:%d/%d/%d,idade:%d,email:\"%s\",fone:%s,celular:%s,logradouro:\"%s\",numero:%d,bairro:\"%s\",cidade:\"%s\","
@@ -82,7 +85,7 @@ typedef struct{
 }Profissao;
 
 typedef struct{
-    char cpf[11], nome[50], email[50], tipo[50], fone[15];
+    char cpf[16], nome[50], email[50], tipo[50], fone[15];
     unsigned int  numRegP, matricula, codProf;
     Data dataNasc;
 }Profissional;
@@ -159,6 +162,10 @@ void alocarRegistroCliente(Cliente* c);
 void registrarCliente(Cliente *c);
 void atualizarRegistroCliente(Cliente* c);
 
+void gotoxy(int x, int y){
+     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),(COORD){x-1,y-1});
+}
+
 int main(){
 
     Profissao profissoes [TAM_MAX];
@@ -174,7 +181,7 @@ int main(){
     abrirArquivo(&arquivo_cliente, "regCliente.txt", ARQUIVO_MODO_LER);
     if((arquivo_log = fopen("log.txt", "w")) == NULL)
     {
-        printf("N√£o foi poss√≠vel criar o arquivo \"log.txt\" \n");
+        printf("N„o foi possÌvel criar o arquivo \"log.txt\" \n");
         return 0;
     }
     alocarRegistroProfissao(profissoes);
@@ -186,7 +193,7 @@ int main(){
 
     do{
         printf("\n--------------------------------------------------------BEM VINDO-------------------------------------------------------\n");
-        printf("\nIr para o menu de:\n [1]Profissional\n [2]Cliente\n [3]Atendimento\n [4]Profiss√£o\n [5]Relat√≥rios\n\n [6]Sair \n\n :");
+        printf("\nIr para o menu de:\n [1]Profissional\n [2]Cliente\n [3]Atendimento\n [4]Profiss„o\n [5]RelatÛrios\n\n[6]Sair \n\n:");
         scanf("%d", &op);
 
         switch(op){
@@ -234,7 +241,7 @@ void menuProfissionais  (Profissional* profissional){
     do{
         system("cls");
         printf("\n----------------------------------------------------MENU DE PROFISSIONAIS-----------------------------------------------------\n");
-        printf("\n [1]Pesquisar por profissional\n [2]Inserir profissional\n [3]Editar informa√ß√µes de um profissional\n [4]Remover profissional\n\n [5]Voltar \n\n :");
+        printf("\n [1]Pesquisar por profissional\n [2]Inserir profissional\n [3]Editar informaÁıes de um profissional\n [4]Remover profissional\n\n [5]Voltar \n\n :");
         scanf("%d", &op);
 
         switch(op){
@@ -270,7 +277,7 @@ void menuClientes (Cliente* cliente){
     do{
         system("cls");
         printf("\n----------------------------------------------------MENU DE CLIENTES----------------------------------------------------\n");
-        printf("\n [1]Pesquisar por cliente\n [2]Inserir cliente\n [3]Editar informa√ß√µes de um cliente\n [4]Remover cliente\n\n [5]Voltar \n\n :");
+        printf("\n [1]Pesquisar por cliente\n [2]Inserir cliente\n [3]Editar informaÁıes de um cliente\n [4]Remover cliente\n\n [5]Voltar \n\n :");
         scanf("%d", &op);
 
         switch(op){
@@ -306,7 +313,7 @@ void menuAtendimentos (Atendimento* atendimento){
     do{
         system("cls");
         printf("\n--------------------------------------------------MENU DE ATENDIMENTOS--------------------------------------------------\n");
-        printf("\n [1]Pesquisar por atendimento\n [2]Inserir atendimento\n [3]Editar informa√ß√µes de um atendimento\n [4]Remover atendimento\n\n [5]Voltar \n\n :");
+        printf("\n [1]Pesquisar por atendimento\n [2]Inserir atendimento\n [3]Editar informaÁıes de um atendimento\n [4]Remover atendimento\n\n [5]Voltar \n\n :");
         scanf("%d", &op);
 
         switch(op){
@@ -341,8 +348,8 @@ void menuProfissao (Profissao* profissao){
     int op, a;
     do{
         system("cls");
-        printf("\n----------------------------------------------------MENU DE PROFISS√ÉO---------------------------------------------------\n");
-        printf("\n [1]Pesquisar por profiss√£o\n [2]Inserir profiss√£o\n [3]Editar informa√ß√µes de uma profiss√£o\n [4]Remover profiss√£o\n\n [5]Voltar \n\n :");
+        printf("\n----------------------------------------------------MENU DE PROFISS√O---------------------------------------------------\n");
+        printf("\n [1]Pesquisar por profiss„o\n [2]Inserir profiss„o\n [3]Editar informaÁıes de uma profiss„o\n [4]Remover profiss„o\n\n [5]Voltar \n\n :");
         scanf("%d", &op);
 
         switch(op){
@@ -373,38 +380,6 @@ void menuProfissao (Profissao* profissao){
     }while(a<1);
 }
 
-void inserirProf(Profissao* profissao){
-    int i, op=1;
-
-    while(1){
-        system("cls");
-        printf("\n---------------------------------------------------INSERIR PROFISS√ÉO---------------------------------------------------\n");
-        printf("\nCodigo = %d\n", codBaseProf+variComProfissao);
-        printf("\nInserir o nome da profiss√£o:");
-        scanf("%s", profissao[tamVetProfissao].nomeProf);
-
-        printf("\nInserir o sigla da profiss√£o: ");
-        scanf("%s", profissao[tamVetProfissao].siglaProf);
-
-        profissao[tamVetProfissao].codProf = codBaseProf+variComProfissao;
-        printf("\nC√≥digo da profiss√£o:%d", profissao[tamVetProfissao].codProf);
-
-        tamVetProfissao++;
-        variComProfissao++;
-        atualizarRegistroProfissao(profissao);
-        printf("\n\n [0]Inserir outra profisss√£o\n [1]Voltar\n: ");
-        scanf("%d", &op);
-
-        if(op==1){
-            break;
-        }
-        else{
-            system("cls");
-            continue;
-        }
-    }
-}
-
 void pesquisarProfissional(Profissional* profissional){
      int i, ii = 0, a=0;
     char op[50];
@@ -413,7 +388,7 @@ void pesquisarProfissional(Profissional* profissional){
     do{
         system("cls");
         printf("-------------------------------------------------PESQUISA POR PROFISSIONAL-------------------------------------------------");
-        printf("\nDigita algo para a pesquisa (Nome, Cpf, Matr√≠cula ou Registro do Profissional)\n:");
+        printf("\nDigita algo para a pesquisa (Nome, Cpf, MatrÌcula ou Registro do Profissional)\n:");
         scanf("%s", op);
         fflush(stdin);
         system("cls");
@@ -443,11 +418,11 @@ void pesquisarProfissional(Profissional* profissional){
                 printf("\n Cpf do profissional: %s", profissional[i].cpf);
                 printf("\n Email do profissional: %s", profissional[i].email);
                 printf("\n Telefone do profissional: %s", profissional[i].fone);
-                printf("\n Profiss√£o do profissional: %s", profissional[i].tipo);
-                printf("\n C√≥digo da profiss√£o do profissional: %d", profissional[i].codProf);
+                printf("\n Profiss„o do profissional: %s", profissional[i].tipo);
+                printf("\n CÛdigo da profiss„o do profissional: %d", profissional[i].codProf);
                 printf("\n Cpf do profissional: %s", profissional[i].cpf);
-                printf("\n Matr√≠cula do atendimento do profissional: %s", profissional[i].cpf);
-                printf("\n N√∫mero de registro do profissional: %d", profissional[i].numRegP);
+                printf("\n MatrÌcula do atendimento do profissional: %s", profissional[i].cpf);
+                printf("\n N˙mero de registro do profissional: %d", profissional[i].numRegP);
             }
         }
 
@@ -472,7 +447,7 @@ void inserirProfissional(Profissional* profissional){
         printf("\nInserir data de nascimento do profissional: ");
         printf("\nDia:");
         scanf("%d", &profissional[tamVetProfissional].dataNasc.dia);
-        printf("\nM√™s:");
+        printf("\nMÍs:");
         scanf("%d", &profissional[tamVetProfissional].dataNasc.mes);
         printf("\nAno:");
         scanf("%d", &profissional[tamVetProfissional].dataNasc.ano);
@@ -489,14 +464,15 @@ void inserirProfissional(Profissional* profissional){
         printf("\nInserir o tipo do profissional: ");
         scanf("%s", profissional[tamVetProfissional].tipo);
 
-        printf("\nInserir o c√≥digo da profiss√£o do profisional: ");
+        printf("\nInserir o cÛdigo da profiss„o do profisional (Formato: 20230XXXXX): ");
         scanf("%d", &profissional[tamVetProfissional].codProf);
+
 
         printf("\nInserir o numero de registro profissional do profissional: ");
         scanf("%d", &profissional[tamVetProfissional].numRegP);
 
         profissional[tamVetProfissional].matricula = codBaseProfissional+variComProfissional;
-        printf("\nNpumero de matr√≠cula do profissional:%d", profissional[tamVetProfissional].matricula);
+        printf("\nNpumero de matrÌcula do profissional:%d", profissional[tamVetProfissional].matricula);
 
         tamVetProfissional++;
         variComProfissional++;
@@ -524,7 +500,7 @@ void removerProfissional(Profissional* profissional){
     do{
         system("cls");
         printf("-------------------------------------------------REMOVER PROFISSIONAL-------------------------------------------------");
-        printf("\nDigita algo para identificar o profissional que voc√™ deseja remover (Nome, Cpf, Matr√≠cula ou Registro do Profissional):\n");
+        printf("\nDigita algo para identificar o profissional que vocÍ deseja remover (Nome, Cpf, MatrÌcula ou Registro do Profissional):\n");
         scanf("%s", op);
         system("cls");
 
@@ -546,7 +522,7 @@ void removerProfissional(Profissional* profissional){
         for(i=0; i<tamVetProfissional; i++){
             //Voc? pode usar atoi para converter uma string para int
             if(codigo == profissional[i].numRegP || codigo == profissional[i].matricula || strcmp(op, profissional[i].nome) == 0 || strcmp(op, profissional[i].cpf) == 0){
-                memset(profissional[i].cpf, 0, sizeof(char[11]));
+                memset(profissional[i].cpf, 0, sizeof(char[16]));
                 memset(profissional[i].nome, 0, sizeof(char[50]));
                 memset(profissional[i].email, 0, sizeof(char[50]));
                 memset(profissional[i].tipo, 0,sizeof(char[50]));
@@ -578,7 +554,7 @@ void editarProfissional(Profissional* profissional){
     do{
         system("cls");
         printf("------------------------------------------------EDITAR PROFISSIONAL-------------------------------------------------");
-        printf("\nDigita algo para a pesquisa (Nome, Cpf, Matr√≠cula ou Registro do Profissional)\n:");
+        printf("\nDigita algo para a pesquisa (Nome, Cpf, MatrÌcula ou Registro do Profissional)\n:");
         fflush(stdin);
         scanf("%s", op);
         system("cls");
@@ -604,7 +580,7 @@ void editarProfissional(Profissional* profissional){
 
         for(i=0; i<tamVetProfissional; i++){
             if(codigo == profissional[i].numRegP || codigo == profissional[i].matricula || strcmp(op, profissional[i].nome) == 0 || strcmp(op, profissional[i].cpf) == 0){
-                printf("\nInforme qual dado voc√™ deseja alterar \n[1]Nome \n[2]CPF \n[3]E-mail \n[4]N√∫mero de Telefone \n[5]Data de nascimento \n[6]Tipo de Profiss√£o \n[7]N√∫mero de Registro \n[8]C√≥digo de profiss√£o \n[9]Voltar\n:");
+                printf("\nInforme qual dado vocÍ deseja alterar \n[1]Nome \n[2]CPF \n[3]E-mail \n[4]N˙mero de Telefone \n[5]Data de nascimento \n[6]Tipo de Profiss„o \n[7]N˙mero de Registro \n[8]CÛdigo de profiss„o \n[9]Voltar\n:");
                 scanf("%d", &opcao);
 
                 switch(opcao){
@@ -612,7 +588,7 @@ void editarProfissional(Profissional* profissional){
                     system("cls");
                     printf("Digite o novo nome:");
                     scanf("%s", &profissional[i].nome);
-                    printf("Esse √© o nome j√° alterado:%s", profissional[i].nome);
+                    printf("Esse ? o nome j? alterado:%s", profissional[i].nome);
                     i = tamVetProfissional;
                     break;
 
@@ -620,7 +596,7 @@ void editarProfissional(Profissional* profissional){
                     system("cls");
                     printf("Digite o novo CPF:");
                     scanf("%s", &profissional[i].cpf);
-                    printf("Esse √© o novo CPF regsitrado:%s", profissional[i].cpf);
+                    printf("Esse È o novo CPF regsitrado:%s", profissional[i].cpf);
                     i = tamVetProfissional;
                     break;
 
@@ -628,53 +604,53 @@ void editarProfissional(Profissional* profissional){
                     system("cls");
                 	printf("Digite novo e-mail:");
                 	scanf("%s", &profissional[i].email);
-                	printf("Esse √© o novo e-mail registrado:%s", profissional[i].email);
+                	printf("Esse ? o novo e-mail registrado:%s", profissional[i].email);
                 	i = tamVetProfissional;
                 	break;
 
                 case 4:
                     system("cls");
-                	printf("Digite o novo n√∫mero de telefone:");
+                	printf("Digite o novo n?mero de telefone:");
                 	scanf("%s", &profissional[i].fone);
-                	printf("Esse √© o n√∫mero de celular novo:%s", profissional[i].fone);
+                	printf("Esse ? o n?mero de celular novo:%s", profissional[i].fone);
                     i = tamVetProfissional;
                     break;
 
                 case 5:
                     system("cls");
                     printf("\n Digite a nova data de nascimento:");
-                
+
                     printf("\n Ano:");
                     scanf("%d", &profissional[i].dataNasc.ano);
 
-                    printf("\nM√™s:");
+                    printf("\nMÍs:");
                     scanf("%d", &profissional[i].dataNasc.mes);
 
                     printf("\n Dia:");
                     scanf("%d", &profissional[i].dataNasc.dia);
 
-                    printf("\nEssa √© a data de nascimento alterada:%d/%d/%d", profissional[i].dataNasc.dia, profissional[i].dataNasc.mes, profissional[i].dataNasc.ano);
+                    printf("\nEssa È a data de nascimento alterada:%d/%d/%d", profissional[i].dataNasc.dia, profissional[i].dataNasc.mes, profissional[i].dataNasc.ano);
                     break;
 
                 case 6:
                     system("cls");
-                    printf("Digite a nova profiss√£o:");
+                    printf("Digite a nova profiss„o:");
                     scanf("%s", &profissional[i].tipo);
-                    printf("\nEssa √© a profiss√£o alterada: %s", profissional[i].tipo);
+                    printf("\nEssa È a profiss„o alterada: %s", profissional[i].tipo);
                     break;
-                
+
                 case 7:
                 system("cls");
-                printf("Digite o novo n√∫mero de registro:");
+                printf("Digite o novo n˙mero de registro:");
                 scanf("%s", &profissional[i].numRegP);
-                printf("\nEsse √© o n√∫mero de registro alterado:%s", profissional[i].numRegP);
+                printf("\nEsse È o n˙mero de registro alterado:%s", profissional[i].numRegP);
                 break;
 
                 case 8:
                 system("cls");
-                printf("Digite o novo c√≥digo de profiss√£o:");
+                printf("Digite o novo cÛdigo de profiss„o:");
                 scanf("%d", &profissional[i].codProf);
-                printf("\nEsse √© o novo c√≥digo de profiss√£o:%d", profissional[i].codProf);
+                printf("\nEsse È o novo cÛdigo de profiss„o:%d", profissional[i].codProf);
                 break;
 
                 case 9:
@@ -688,10 +664,41 @@ void editarProfissional(Profissional* profissional){
             }
         }
 
-        printf("\n\n [0]Ver outra profiss√£o\n [1]Voltar\n: ");
+        printf("\n\n [0]Ver outra profisss„o\n [1]Voltar\n: ");
         scanf("%d", &a);
 
     }while(a<1);
+}
+
+void inserirProf(Profissao* profissao){
+    int i, op=1;
+
+    while(1){
+        system("cls");
+        printf("\n---------------------------------------------------INSERIR PROFISS√O---------------------------------------------------\n");
+        printf("\nInserir o nome da profiss„o: ");
+        scanf("%s", profissao[tamVetProfissao].nomeProf);
+
+        printf("\nInserir o sigla da profiss„o: ");
+        scanf("%s", profissao[tamVetProfissao].siglaProf);
+
+        profissao[tamVetProfissao].codProf = codBaseProf+variComProfissao;
+        printf("\nCÛdigo da profiss„o:%d", profissao[tamVetProfissao].codProf);
+
+        tamVetProfissao++;
+        variComProfissao++;
+        atualizarRegistroProfissao(profissao);
+        printf("\n\n [0]Inserir outra profisss„o\n [1]Voltar\n: ");
+        scanf("%d", &op);
+
+        if(op==1){
+            break;
+        }
+        else{
+            system("cls");
+            continue;
+        }
+    }
 }
 
 void pesquisarProf(Profissao* profissao){
@@ -701,8 +708,8 @@ void pesquisarProf(Profissao* profissao){
 
     do{
         system("cls");
-        printf("-------------------------------------------------PESQUISA POR PROFISS√ÉO-------------------------------------------------");
-        printf("\nDigita algo para a pesquisa (Nome, Sigla ou C√≥digo da Profiss√£o)\n:");
+        printf("-------------------------------------------------PESQUISA POR PROFISS?O-------------------------------------------------");
+        printf("\nDigita algo para a pesquisa (Nome, Sigla ou CÛdigo da Profiss„o)\n:");
         scanf("%s", op);
         fflush(stdin);
         system("cls");
@@ -726,13 +733,13 @@ void pesquisarProf(Profissao* profissao){
         for(i=0; i<tamVetProfissao; i++){
             //Voc? pode usar atoi para converter uma string para int
             if(strcmp(op, profissao[i].nomeProf) == 0 || codigo == profissao[i].codProf || strcmp(op, profissao[i].siglaProf) == 0){
-                printf("\n Nome da profiss√£o: %s", profissao[i].nomeProf);
-                printf("\n Sigla da profiss√£o: %s", profissao[i].siglaProf);
-                printf("\n C√≥digo da profiss√£o: %d", profissao[i].codProf);
+                printf("\n Nome da profiss„o: %s", profissao[i].nomeProf);
+                printf("\n Sigla da profiss„o: %s", profissao[i].siglaProf);
+                printf("\n CÛdigo da profiss„o: %d", profissao[i].codProf);
             }
         }
 
-        printf("\n\n [0]Ver outra profiss√£o\n [1]Voltar\n: ");
+        printf("\n\n [0]Ver outra profisss„o\n [1]Voltar\n: ");
         scanf("%d", &a);
 
     }while(a<1);
@@ -745,8 +752,8 @@ void removerProf(Profissao* profissao){
 
     do{
         system("cls");
-        printf("-------------------------------------------------REMOVER PROFISS√ÉO-------------------------------------------------");
-        printf("\nDigita algo para a identificar a profiss√£o que voc√™ deseja remover (Nome, Sigla ou C√≥digo da Profiss√£o)\n:");
+        printf("-------------------------------------------------REMOVER PROFISS√O-------------------------------------------------");
+        printf("\nDigita algo para a identificar a profiss„o que vocÍ deseja remover (Nome, Sigla ou CÛdigo da Profiss„o)\n:");
         scanf("%s", op);
         system("cls");
 
@@ -770,7 +777,6 @@ void removerProf(Profissao* profissao){
         for(i=0; i<tamVetProfissao; i++){
             //Voc? pode usar atoi para converter uma string para int
             if(strcmp(op, profissao[i].nomeProf) == 0 || codigo == profissao[i].codProf || strcmp(op, profissao[i].siglaProf) == 0){
-                printf("\nRemovendo\n%d\n%s\n%s\n", profissao[i].codProf, profissao[i].nomeProf, profissao[i].siglaProf);
                 memset(profissao[i].nomeProf, 0, sizeof(char[50]) );
                 memset(profissao[i].siglaProf, 0, sizeof(char[10]) );
                 profissao[i].codProf = 0;
@@ -780,7 +786,7 @@ void removerProf(Profissao* profissao){
                 break;
             }
         }
-        printf("\n\n [0]Ver outra profiss√£o\n [1]Voltar\n: ");
+        printf("\n\n [0]Ver outra profisss„o\n [1]Voltar\n: ");
         scanf("%d", &a);
 
     }while(a<1);
@@ -793,8 +799,8 @@ void editarProf(Profissao* profissao){
 
     do{
         system("cls");
-        printf("------------------------------------------------EDITAR PROFISS√ÉO-------------------------------------------------");
-        printf("\nDigita algo para a identificar a profiss√£o que voc√™ deseja editar (Nome, Sigla ou C√≥digo da Profiss√£o)\n:");
+        printf("------------------------------------------------EDITAR PROFISS?O-------------------------------------------------");
+        printf("\nDigita algo para a identificar a profiss„o que vocÍ deseja editar (Nome, Sigla ou CÛdigo da Profiss?o)\n:");
         fflush(stdin);
         scanf("%s", op);
         system("cls");
@@ -821,20 +827,20 @@ void editarProf(Profissao* profissao){
         for(i=0; i<tamVetProfissao; i++){
             if(strcmp(op, profissao[i].nomeProf) == 0 || codigo == profissao[i].codProf || strcmp(op, profissao[i].siglaProf) == 0){
                 printf("\nEditando\n%d\n%s\n%s\n", profissao[i].codProf, profissao[i].nomeProf, profissao[i].siglaProf);
-                printf("\nInforme qual dado voc√™ deseja alterar \n[1]Nome \n[2]Sigla \n[3]Voltar\n:");
+                printf("\nInforme qual dado vocÍ deseja alterar \n[1]Nome \n[2]Sigla \n[3]Voltar\n:");
                 scanf("%d", &opcao);
 
                 switch(opcao){
                 case 1:
-                    printf("Digite o novo nome da profiss√£o:");
+                    printf("Digite o novo nome da profiss„o:");
                     scanf("%s", profissao[i].nomeProf);
-                    printf("Esse √© o nome j√° alterado:%s", profissao[i].nomeProf);
+                    printf("Esse È o nome j· alterado:%s", profissao[i].nomeProf);
                     i = tamVetProfissao;
                     break;
                 case 2:
-                    printf("Digite a nova sigla da profiss√£o:");
+                    printf("Digite a nova sigla da profiss„o:");
                     scanf("%s", profissao[i].siglaProf);
-                    printf("Essa √© a sigla j√° alterada:%s", profissao[i].siglaProf);
+                    printf("Esse È a sigla j· alterada:%s", profissao[i].siglaProf);
                     i = tamVetProfissao;
                     break;
                 case 3:
@@ -848,7 +854,7 @@ void editarProf(Profissao* profissao){
             }
         }
 
-        printf("\n\n [0]Ver outra profisss√£o\n [1]Voltar\n: ");
+        printf("\n\n [0]Ver outra profisss?o\n [1]Voltar\n: ");
         scanf("%d", &a);
 
     }while(a<1);
@@ -862,7 +868,7 @@ void editarProf(Profissao* profissao){
         system("cls");
         printf("-------------------------------------------------PESQUISAR POR ATENDIMENTO-------------------------------------------------");
 
-        printf("\nDigita algo para a pesquisa (Matr√≠cula ou n√∫mero do atendimento)\n:");
+        printf("\nDigita algo para a pesquisa (MatrÌcula ou n˙mero do atendimento)\n:");
         scanf("%d", &op);
 
         system("cls");
@@ -871,9 +877,9 @@ void editarProf(Profissao* profissao){
             if(op == atendimento[i].matAten || op == atendimento[i].numero){
                 printf("\n Data do atendimento: %d/%d/%d", atendimento[i].dataAten.dia, atendimento[i].dataAten.mes, atendimento[i].dataAten.ano);
                 printf("\n Atendimento:\n %s\n", atendimento[i].aten);
-                printf("\n Matr√≠cula do atendimento: %d", atendimento[i].matAten);
+                printf("\n MatrÌcula do atendimento: %d", atendimento[i].matAten);
                 printf("\n Cliente do atendimento: %d", atendimento[i].codClien);
-                printf("\n N√∫mero do atendimento: %d", atendimento[i].numero);
+                printf("\n N˙mero do atendimento: %d", atendimento[i].numero);
                 break;
             }
         }
@@ -896,7 +902,7 @@ void editarProf(Profissao* profissao){
         printf("\n Ano:");
         scanf("%d", &atendimento[tamVetAten].dataAten.ano);
 
-        printf("\n M√™s:");
+        printf("\n MÍs:");
         scanf("%d", &atendimento[tamVetAten].dataAten.mes);
 
         printf("\n Dia:");
@@ -911,14 +917,14 @@ void editarProf(Profissao* profissao){
 
         system("cls");
 
-        printf("Matr√≠cula do profissional:");
+        printf("MatrÌcula do profissional (Formato: 20232XXXXX):");
         scanf("%ld", &atendimento[tamVetAten].matAten);
 
-        printf("C√≥digo do cliente:");
+        printf("CÛdigo do cliente (Formato: 20233XXXXX):");
         scanf("%ld", &atendimento[tamVetAten].codClien);
 
         atendimento[tamVetAten].numero = variComAten + numBaseAten;
-        printf("\n N√∫mero do atendimento: %d", atendimento[tamVetAten].numero);
+        printf("\n N˙mero do atendimento: %d", atendimento[tamVetAten].numero);
 
         tamVetAten++;
         variComAten++;
@@ -942,23 +948,23 @@ void editarAten(Atendimento* atendimento){
     do{
         system("cls");
         printf("-------------------------------------------------EDITAR  ATENDIMENTO-------------------------------------------------");
-        printf("\nDigita algo para a identificar o atendimento que voc√™ deseja editar (matr√≠cula ou n√∫mero do atendimento)\n:");
+        printf("\nDigita algo para a identificar o atendimento que vocÍ deseja editar (matrÌcula ou n˙mero do atendimento)\n:");
         scanf("%d", &op);
         system("cls");
 
         for(i=0; i<tamVetAten; i++){
             if(op==atendimento[i].matAten||op==atendimento[i].numero){
-                    printf("\nInforme qual dado voc√™ deseja alterar \n[1]O atendimento \n[2]A data\n:");
+                    printf("\nInforme qual dado vocÍ deseja alterar \n[1]O atendimento \n[2]A data\n:");
                     scanf("%d", &b);
 
                 switch(b){
                 case 1:
                     system("cls");
-                    printf(" Digite as novas especifica√ß√µes do atendimento(Max 500 caracteres):\n:");
+                    printf(" Digite as novas especificaÁıes do atendimento(Max 500 caracteres):\n:");
                     fflush(stdin);
                     gets(atendimento[i].aten);
                     fflush(stdin);
-                    printf(" Esse √© o atendimento j√° alterado:\n:%s", atendimento[i].aten);
+                    printf(" Esse È o atendimento j· alterado:\n:%s", atendimento[i].aten);
                     i = tamVetAten;
                     break;
                 case 2:
@@ -967,13 +973,13 @@ void editarAten(Atendimento* atendimento){
                     printf("\n Ano:");
                     scanf("%d", &atendimento[i].dataAten.ano);
 
-                    printf("\n M√™s:");
+                    printf("\n MÍs:");
                     scanf("%d", &atendimento[i].dataAten.mes);
 
                     printf("\n Dia:");
                     scanf("%d", &atendimento[i].dataAten.dia);
 
-                    printf(" Essa √© a data j√° alterada:%d/%d/%d", atendimento[i].dataAten.dia, atendimento[i].dataAten.mes, atendimento[i].dataAten.ano);
+                    printf(" Essa È a data j· alterada:%d/%d/%d", atendimento[i].dataAten.dia, atendimento[i].dataAten.mes, atendimento[i].dataAten.ano);
                     i = tamVetAten;
                     break;
                 default:
@@ -984,7 +990,7 @@ void editarAten(Atendimento* atendimento){
             }
         }
 
-        printf("\n\n [0]Ver outro atendimento\n [1]Voltar\n: ");
+        printf("\n\n [0]Ver outra profisss„o\n [1]Voltar\n: ");
         scanf("%d", &a);
 
     }while(a<1);
@@ -996,7 +1002,7 @@ void removerAten(Atendimento* atendimento){
     do{
         system("cls");
         printf("-------------------------------------------------REMOVER ATENDIMENTO-------------------------------------------------");
-        printf("\nDigita algo para a identificar o atendimento que voc√™ deseja remover (matr√≠cula ou n√∫mero do atendimento)\n:");
+        printf("\nDigita algo para a identificar o atendimento que vocÍ deseja remover (matrÌcula ou n˙mero do atendimento)\n:");
         scanf("%d", &op);
         system("cls");
 
@@ -1061,7 +1067,7 @@ void inserirCliente(Cliente* cliente){
         printf("\n Ano:");
         scanf("%d", &cliente[tamVetCliente].dataNasc.ano);
 
-        printf("\n M√™s:");
+        printf("\n MÍs:");
         scanf("%d", &cliente[tamVetCliente].dataNasc.mes);
 
         printf("\n Dia:");
@@ -1069,7 +1075,7 @@ void inserirCliente(Cliente* cliente){
 
         system("cls");
 
-        printf("-Endere√ßo-");
+        printf("-EndereÁo-");
         printf("\nEstado:");
         fflush(stdin);
         gets(cliente[tamVetCliente].endereco.estado);
@@ -1090,7 +1096,7 @@ void inserirCliente(Cliente* cliente){
         gets(cliente[tamVetCliente].endereco.logradouro);
         fflush(stdin);
 
-        printf("\nN√∫mero:");
+        printf("\nN˙mero:");
         scanf("%d", &cliente[tamVetCliente].endereco.numEndereco);
 
         printf("\nCep:");
@@ -1101,7 +1107,7 @@ void inserirCliente(Cliente* cliente){
         system("cls");
 
         cliente[tamVetCliente].codigo = codBaseCliente+variComCliente;
-        printf("\n C√≥digo do cliente: %d", cliente[tamVetCliente].codigo);
+        printf("\n CÛdigo do cliente: %d", cliente[tamVetCliente].codigo);
 
         tamVetCliente++;
         variComCliente++;
@@ -1130,7 +1136,7 @@ void pesquisarCliente(Cliente* cliente){
         system("cls");
         printf("-------------------------------------------------PESQUISAR POR CLIENTE-------------------------------------------------");
 
-        printf("\nDigita algo para a pesquisa (C√≥digo, n√∫mero do celular, email ou nome do cliente)\n:");
+        printf("\nDigita algo para a pesquisa (CÛdigo, n˙mero do celular, email ou nome do cliente)\n:");
         fflush(stdin);
         scanf("%[^\n]", op);
         fflush(stdin);
@@ -1162,7 +1168,7 @@ void pesquisarCliente(Cliente* cliente){
                 printf("\nTelefone de contato: %s", cliente[i].fone);
                 printf("\nCelular de contato: %s", cliente[i].celular);
                 printf("\nEmail: %s", cliente[i].email);
-                printf("\n\nEstado: %s\nCidade: %s\nBairro: %s\nRua: %s\nN√∫mero da casa: %d\nCep: %s", cliente[i].endereco.estado,
+                printf("\n\nEstado: %s\nCidade: %s\nBairro: %s\nRua: %s\nN˙mero da casa: %d\nCep: %s", cliente[i].endereco.estado,
                     cliente[i].endereco.cidade, cliente[i].endereco.bairro, cliente[i].endereco.logradouro, cliente[i].endereco.numEndereco,
                     cliente[i].endereco.cep);
             }
@@ -1184,7 +1190,7 @@ void pesquisarCliente(Cliente* cliente){
         system("cls");
 
         printf("-------------------------------------------------EDITAR  CLIENTE-------------------------------------------------");
-        printf("\nDigita algo para a pesquisa (C√≥digo, n√∫mero do celular, email ou nome do cliente)\n:");
+        printf("\nDigita algo para a pesquisa (CÛdigo, n˙mero do celular, email ou nome do cliente)\n:");
         fflush(stdin);
         scanf("%[^\n]", op);
         fflush(stdin);
@@ -1210,7 +1216,7 @@ void pesquisarCliente(Cliente* cliente){
         for(i=0; i<tamVetCliente; i++){
             if(codigo == cliente[i].codigo || strcmp(op, cliente[i].nome) == 0 || strcmp(op, cliente[i].email) == 0 || strcmp(op, cliente[i].celular) == 0) {
 
-                printf("\n-Informe qual dado voc√™ deseja alterar- \n [1]Nome \n [2]Data de nascimento \n  [3]N√∫mero de celular \n [4]Email \n [5]Endere√ßo \n:");
+                printf("\n-Informe qual dado vocÍ deseja alterar- \n [1]Nome \n [2]Data de nascimento \n  [3]N˙mero de celular \n [4]Email \n [5]EndereÁo \n:");
                 scanf("%d", &b);
 
                 switch(b){
@@ -1229,24 +1235,24 @@ void pesquisarCliente(Cliente* cliente){
                     printf("\n Ano:");
                     scanf("%d", &cliente[i].dataNasc.ano);
 
-                    printf("\n M√™s");
+                    printf("\n M?s:");
                     scanf("%d", &cliente[i].dataNasc.mes);
 
                     printf("\n Dia:");
                     scanf("%d", &cliente[i].dataNasc.dia);
 
-                    printf(" Essa √© a data de nascimento j√° alterada:%d/%d/%d", cliente[i].dataNasc.dia, cliente[i].dataNasc.mes, cliente[i].dataNasc.ano);
+                    printf(" Essa È a data de nascimento j· alterada:%d/%d/%d", cliente[i].dataNasc.dia, cliente[i].dataNasc.mes, cliente[i].dataNasc.ano);
                     break;
 
                 case 3:
                     system("cls");
 
-                    printf("\n Digite o novo n√∫mero de celular para contato:");
+                    printf("\n Digite o novo n˙mero de celular para contato:");
                     fflush(stdin);
                     gets(cliente[i].celular);
                     fflush(stdin);
 
-                    printf(" Esse √© o n√∫mero de celular para contato j√° altearado: %s", cliente[i].celular);
+                    printf(" Esse È o n˙mero de celular para contato j· altearado: %s", cliente[i].celular);
                     break;
 
                 case 4:
@@ -1257,7 +1263,7 @@ void pesquisarCliente(Cliente* cliente){
                     break;
 
                 case 5:
-                    printf("\n Digite o novo endere√ßo:");
+                    printf("\n Digite o novo endereÁo:");
                     printf("\nEstado:");
                     fflush(stdin);
                     gets(cliente[i].endereco.estado);
@@ -1278,7 +1284,7 @@ void pesquisarCliente(Cliente* cliente){
                     gets(cliente[i].endereco.logradouro);
                     fflush(stdin);
 
-                    printf("\nN√∫mero:");
+                    printf("\nN˙mero:");
                     scanf("%d", &cliente[i].endereco.numEndereco);
 
                     printf("\nCep:");
@@ -1310,7 +1316,7 @@ void pesquisarCliente(Cliente* cliente){
         do{
         system("cls");
         printf("-------------------------------------------------REMOVER CLIENTE-------------------------------------------------");
-        printf("\nDigita algo para a pesquisa (C√≥digo, n√∫mero do celular, email ou nome do cliente)\n:");
+        printf("\nDigita algo para a pesquisa (CÛdigo, n˙mero do celular, email ou nome do cliente)\n:");
         fflush(stdin);
         scanf("%[^\n]", op);
         fflush(stdin);
@@ -1366,56 +1372,103 @@ void pesquisarCliente(Cliente* cliente){
  }
 
  /*
-======M√≥dulo Relat√≥rios======
+======MÛdulo RelatÛrios======
 */
 
 void menuRelatorios(Profissional* p, Cliente* c, Atendimento* a)
 {
-    relatorioAtendimentoGeralMes(a);
+int op, d=0;
+
+    do{
+        system("cls");
+
+        printf("[1]Lista de profissionais\n[2]Lista de profissionais aniversariantes\n[3]Lista de atendimentos gerais\n"
+        "[4]Lista de atendimentos gerais em um periodo determinado\n[5]Lista de atendimento gerais do mÍs\n"
+        "[6]Lista de estatisticas de atendimento dos profissionais\n[7]Lista de clientes aniversariantes\n[8]Voltar\n :");
+        scanf("%d", &op);
+
+        switch(op){
+        case 1:
+            relatorioListaProfissionais(p);
+            break;
+        case 2:
+            relatorioListaProfissionaisAniversariantes(p);
+            break;
+        case 3:
+            relatorioAtendimentoGeral(p, c, a);
+            break;
+        case 4:
+            relatorioAtendimentoGeralPeriodo(p, c, a);
+            break;
+        case 5:
+            relatorioAtendimentoGeralMes(a);
+            break;
+        case 6:
+            relatorioEstatisticaProfissionalAtendimentos(p, a);
+            break;
+        case 7:
+            relatorioListaClientesAniversariantes(c);
+            break;
+        case 8:
+            d=1;
+            break;
+        default:
+            system("cls");
+            continue;
+            break;
+        }
+    }while(d<1);
 }
 
 void relatorioListaProfissionais(Profissional* p)
 {
     int i;
+    system("cls");
+    printf("----------------------PROFISSIONAIS--------------------------\n");
     for(i=0; i<tamVetProfissional; i++){
-        printf("--------PROFISSIONAIS--------");
-        printf("\n\n Nome do profissional: %s", p[i].nome);
-        printf("\n Data de nascimento do profissional: %d/%d/%d", p[i].dataNasc.dia, p[i].dataNasc.mes, p[i].dataNasc.ano);
-        printf("\n Cpf do profissional: %s", p[i].cpf);
-        printf("\n Email do profissional: %s", p[i].email);
-        printf("\n Telefone do profissional: %s", p[i].fone);
-        printf("\n Profiss√£o do profissional: %s", p[i].tipo);
-        printf("\n C√≥digo da profiss√£o do profissional: %d", p[i].codProf);
-        printf("\n Cpf do profissional: %s", p[i].cpf);
-        printf("\n Matr√≠cula do atendimento do profissional: %s", p[i].cpf);
-        printf("\n N√∫mero de registro do profissional: %d", p[i].numRegP);
-    }
+        printf("\n MatrÌcula:      %d", p[i].matricula);
+        printf("\n Data Nasc.:     %d/%d/%d", p[i].dataNasc.dia, p[i].dataNasc.mes, p[i].dataNasc.ano);
+        printf("\n Nome:           %s", p[i].nome);
+        printf("\n Cpf:            %s", p[i].cpf);
+        printf("\n Email:          %s", p[i].email);
+        printf("\n Telefone:       %s", p[i].fone);
+        printf("\n Profiss„o:      %s", p[i].tipo);
+        printf("\n CÛd. Profiss„o: %d", p[i].codProf);
+        printf("\n N∫ do Registro: %d\n", p[i].numRegP);
 
+    }
     system("pause");
+
 }
 
-void relatorioListaProfissionaisAniversariantes(Profissional* profissional){
-    int tm_mday, tm_mon, tm_year, i, a;
+void relatorioListaProfissionaisAniversariantes(Profissional* p){
+    int dia, mes, i, a;
+
+    time_t t = time(NULL);
+    struct tm* tm_ptr = localtime(&t);
+
+    dia = tm_ptr->tm_mday;
+    mes = 1 + tm_ptr->tm_mon;
 
     system("cls");
 
-    for(i=0; i<tamVetProfissional; i++){
-        if(profissional[i].dataNasc.dia == tm_mday && profissional[i].dataNasc.mes == tm_mon && profissional[i].dataNasc.ano == tm_year )
-        {
-            printf("------PROFISSIONAIS ANIVERSARIANTES------");
-            printf("\n\n Nome do profissional: %s", profissional[i].nome);
-            printf("\n Data de nascimento do profissional: %d/%d/%d", profissional[i].dataNasc.dia, profissional[i].dataNasc.mes, profissional[i].dataNasc.ano);
-            printf("\n Cpf do profissional: %s", profissional[i].cpf);
-            printf("\n Email do profissional: %s", profissional[i].email);
-            printf("\n Telefone do profissional: %s", profissional[i].fone);
-            printf("\n Profiss√£o do profissional: %s", profissional[i].tipo);
-            printf("\n C√≥digo da profiss√£o do profissional: %d", profissional[i].codProf);
-            printf("\n Cpf do profissional: %s", profissional[i].cpf);
-            printf("\n Matr√≠cula do atendimento do profissional: %s", profissional[i].cpf);
-            printf("\n N√∫mero de registro do profissional: %d", profissional[i].numRegP);
-        }
-    }  
+    printf("----------------PROFISSIONAIS ANIVERSARIANTES---------------\n");
 
+    for(i=0; i<tamVetProfissional; i++){
+        if(p[i].dataNasc.dia == dia && p[i].dataNasc.mes == mes)
+        {
+            printf("\n MatrÌcula:      %s", p[i].matricula);
+            printf("\n Nome:           %s", p[i].nome);
+            printf("\n Data Nasc.:     %d/%d/%d", p[i].dataNasc.dia, p[i].dataNasc.mes, p[i].dataNasc.ano);
+            printf("\n Cpf:            %s", p[i].cpf);
+            printf("\n Email:          %s", p[i].email);
+            printf("\n Telefone:       %s", p[i].fone);
+            printf("\n Profiss„o:      %s", p[i].tipo);
+            printf("\n CÛd. Profiss„o: %d", p[i].codProf);
+            printf("\n N∫ do Registro: %d\n", p[i].numRegP);
+        }
+    }
+    system("pause");
 }
 
 void relatorioAtendimentoGeral(Profissional* p, Cliente* c, Atendimento* a)
@@ -1423,6 +1476,12 @@ void relatorioAtendimentoGeral(Profissional* p, Cliente* c, Atendimento* a)
     int i;
     system("cls");
     printf("------------------------------------------------ATENDIMENTOS GERAIS------------------------------------------------");
+    gotoxy(1,2);
+    printf("CLIENTE");
+    gotoxy(50,2);
+    printf("PROFISSIONAL");
+    gotoxy(100,2);
+    printf("DATA");
     for ( i = 0; i < tamVetAten; i++ )
     {
         Cliente cliente = getCliente(c, a[i].codClien);
@@ -1430,52 +1489,66 @@ void relatorioAtendimentoGeral(Profissional* p, Cliente* c, Atendimento* a)
 
         if (cliente.codigo == 0)
         {
-            printf("\nErro ao exibir informa√ß√µes");
+            printf("\nErro ao exibir informaÁıes");
             continue;
         }
+        gotoxy(1, 3 + i);
+        printf("%s", cliente.nome);
+        gotoxy(50, 3 + i);
+        printf("%s", profissional.nome);
+        gotoxy(100, 3 + i);
+        printf("%d/%d/%d", a[i].dataAten.dia, a[i].dataAten.mes, a[i].dataAten.ano);
 
-        printf("\nCliente: %s | Profissional: %s | Data:%d/%d/%d", cliente.nome, profissional.nome, a[i].dataAten.dia, a[i].dataAten.mes, a[i].dataAten.ano);
-        printf("\n");
-        
+        printf("\n\n");
     }
 
-    system("pause");
+    getch();
 }
 
 void relatorioAtendimentoGeralPeriodo(Profissional* p, Cliente* c, Atendimento* a)
 {
     int i;
     system("cls");
-    printf("-----------------------------------------ATENDIMENTOS GERAIS POR PER√çODO------------------------------------------------");
+    printf("-----------------------------------------ATENDIMENTOS GERAIS POR PERÕODO------------------------------------------------");
 
     Data dataMin, dataMax;
 
-    printf("\nDigite o dia m√≠nimo: ");
+    printf("\nDigite o dia mÌnimo: ");
     scanf("%d", &dataMin.dia);
-    printf("\nDigite o m√™s m√≠nimo: ");
+    printf("\nDigite o mÍs mÌnimo: ");
     scanf("%d", &dataMin.mes);
-    printf("\nDigite o ano m√≠nimo: ");
+    printf("\nDigite o ano mÌnimo: ");
     scanf("%d", &dataMin.ano);
 
-    printf("\nDigite o dia m√°ximo: ");
+    printf("\nDigite o dia m·ximo: ");
     scanf("%d", &dataMax.dia);
-    printf("\nDigite o m√™s m√°ximo: ");
+    printf("\nDigite o mÍs m·ximo: ");
     scanf("%d", &dataMax.mes);
-    printf("\nDigite o ano m√°ximo: ");
+    printf("\nDigite o ano m·ximo: ");
     scanf("%d", &dataMax.ano);
 
+    system("cls");
+
+    gotoxy(1,2);
+    printf("CLIENTE");
+    gotoxy(50,2);
+    printf("PROFISSIONAL");
+    gotoxy(100,2);
+    printf("DATA");
 
     for ( i = 0; i < tamVetAten; i++ )
     {
-        if (a[i].dataAten.ano < dataMin.ano && a[i].dataAten.ano > dataMax.ano)
+        if (a[i].dataAten.ano < dataMin.ano || a[i].dataAten.ano > dataMax.ano)
         {
-            if (a[i].dataAten.mes < dataMin.mes && a[i].dataAten.mes > dataMax.mes)
-            {
-                if (a[i].dataAten.dia < dataMin.dia && a[i].dataAten.dia > dataMax.dia)
-                {
-                    continue;
-                }
-            }
+            continue;
+        }
+        else if (a[i].dataAten.mes < dataMin.mes || a[i].dataAten.mes > dataMax.mes)
+        {
+            continue;
+        }
+        else if (a[i].dataAten.dia < dataMin.dia || a[i].dataAten.dia > dataMax.dia)
+        {
+            continue;
         }
 
         Cliente cliente = getCliente(c, a[i].codClien);
@@ -1483,15 +1556,20 @@ void relatorioAtendimentoGeralPeriodo(Profissional* p, Cliente* c, Atendimento* 
 
         if (cliente.codigo == 0)
         {
-            printf("\nErro ao exibir informa√ß√µes");
+            printf("\nErro ao exibir informaÁıes");
             continue;
         }
 
-        printf("\nCliente: %s | Profissional: %s | Data:%d/%d/%d", cliente.nome, profissional.nome, a[i].dataAten.dia, a[i].dataAten.mes, a[i].dataAten.ano);
-        printf("\n");
-        
+        gotoxy(1, 3 + i);
+        printf("%s", cliente.nome);
+        gotoxy(50, 3 + i);
+        printf("%s", profissional.nome);
+        gotoxy(100, 3 + i);
+        printf("%d/%d/%d", a[i].dataAten.dia, a[i].dataAten.mes, a[i].dataAten.ano);
+        printf("\n\n");
+
     }
-    system("pause");
+    getch();
 
 }
 
@@ -1502,7 +1580,7 @@ void relatorioAtendimentoGeralMes(Atendimento* a)
     Data data;
 
     system("cls");
-    printf("-----------------------------------------ATENDIMENTOS GERAIS POR M√äS------------------------------------------------");
+    printf("-----------------------------------------ATENDIMENTOS GERAIS POR M S------------------------------------------------");
     printf("\nDigite o ano: ");
     scanf("%d", &data.ano);
 
@@ -1512,11 +1590,11 @@ void relatorioAtendimentoGeralMes(Atendimento* a)
         {
             atensMes[ a[i].dataAten.mes-1 ]++;
         }
-            
+
     }
 
     printf("\n%d\n", data.ano);
-    printf("\nJAN: %d\nFEV: %d\nMAR: %d\nABR: %d\nMAI: %d\nJUN: %d\nJUL: %d\nAGO: %d\nSET: %d\nOUT: %d\nNOV: %d\nDEZ: %d\n", 
+    printf("\nJAN: %d\nFEV: %d\nMAR: %d\nABR: %d\nMAI: %d\nJUN: %d\nJUL: %d\nAGO: %d\nSET: %d\nOUT: %d\nNOV: %d\nDEZ: %d\n",
         atensMes[0], atensMes[1], atensMes[2], atensMes[3], atensMes[4], atensMes[5], atensMes[6], atensMes[7], atensMes[8], atensMes[9], atensMes[10], atensMes[11]);
 
     system("pause");
@@ -1524,16 +1602,71 @@ void relatorioAtendimentoGeralMes(Atendimento* a)
 
 void relatorioEstatisticaProfissionalAtendimentos(Profissional* p, Atendimento* a)
 {
+    int i, j, quantAtendimentos;
+
+    system("cls");
+    gotoxy(1,2);
+    printf("C”DIGO");
+    gotoxy(12,2);
+    printf("NOME");
+    gotoxy(62,2);
+    printf("ATENDIMENTOS");
+
+    for (i = 0; i < tamVetProfissional; i++)
+    {
+        quantAtendimentos = 0;
+        for (j = 0; j < tamVetAten; j++)
+        {
+            if (a[j].matAten == p[i].matricula)
+            {
+                quantAtendimentos++;
+            }
+        }
+        gotoxy(1, 3 + i);
+        printf("%d", p[i].matricula);
+        gotoxy(12, 3 + i);
+        printf("%s", p[i].nome);
+        gotoxy(62, 3 + i);
+        printf(":%d", quantAtendimentos);
+    }
+
+    printf("\n");
+    getch();
 
 }
 
 void relatorioListaClientesAniversariantes(Cliente* c)
 {
+    int dia, mes, ano, i, a;
 
+    time_t t = time(NULL);
+    struct tm* tm_ptr = localtime(&t);
+
+    dia = tm_ptr->tm_mday;
+    mes = 1 + tm_ptr->tm_mon;
+
+    system("cls");
+    do{
+        for(i=0; i<tamVetProfissional; i++){
+            if(c[i].dataNasc.dia == dia && c[i].dataNasc.mes == mes){
+                printf("------CLIENTES ANIVERSARIANTES------");
+                printf("\nNome:       %s", c[i].nome);
+                printf("\nIdade:      %d", c[i].idade);
+                printf("\nData Nasc.: %d/%d/%d", c[i].dataNasc.dia, c[i].dataNasc.mes, c[i].dataNasc.ano);
+                printf("\nTelefone:   %s", c[i].fone);
+                printf("\nCelular:    %s", c[i].celular);
+                printf("\nEmail:      %s", c[i].email);
+                printf("\nEstado:     %s\nCidade:     %s\nBairro:     %s\nRua:        %s\nCasa:       %d\nCep:        %s", c[i].endereco.estado,
+                    c[i].endereco.cidade, c[i].endereco.bairro, c[i].endereco.logradouro, c[i].endereco.numEndereco, c[i].endereco.cep);
+            }
+        }
+        printf("\n\n [0]Ver lista novamente\n [1]Voltar\n: ");
+        scanf("%d", &a);
+    }while(a != 1);
 }
 
  /*
-======M√≥dulo Arquivos======
+======MÛdulo Arquivos======
 */
 int abrirArquivo(FILE** arquivo, const char* caminho, const char modo)
 {
@@ -1546,7 +1679,7 @@ int abrirArquivo(FILE** arquivo, const char* caminho, const char modo)
     {
         if((*arquivo = fopen(caminho, "w+")) == NULL)
         {
-            printf("N√£o foi poss√≠vel criar o arquivo \"%s\" \n", caminho);
+            printf("N„o foi possÌvel criar o arquivo \"%s\" \n", caminho);
             return 0;
         }
         printf("\nO arquivo foi criado com sucesso.\n");
@@ -1559,7 +1692,7 @@ int abrirArquivo(FILE** arquivo, const char* caminho, const char modo)
             while (1)
             {
                 system("cls");
-                printf("N√£o foi poss√≠vel abrir o arquivo \"%s\" \n", caminho);
+                printf("N„o foi possÌvel abrir o arquivo \"%s\" \n", caminho);
                 printf("Deseja criar um novo? (S/N)\n");
                 char opcao;
                 scanf("%c", &opcao);
@@ -1568,7 +1701,7 @@ int abrirArquivo(FILE** arquivo, const char* caminho, const char modo)
                 {
                     if((*arquivo = fopen(caminho, "w+")) == NULL)
                     {
-                        printf("N√£o foi poss√≠vel criar o arquivo \"%s\" \n", caminho);
+                        printf("N„o foi possÌvel criar o arquivo \"%s\" \n", caminho);
                         return 0;
                     }
                     printf("O arquivo foi criado com sucesso.\n");
@@ -1768,8 +1901,8 @@ void alocarRegistroProfissional(Profissional* p)
         int i;
         for (i = 0; i < tamVetProfissional; i++)
         {
-            fscanf(arquivo_profissional, IN_PROFISSIONAL_FORMAT, &p[i].matricula, p[i].cpf, p[i].nome, &p[i].codProf, &p[i].numRegP, &p[i].dataNasc.dia,
-                &p[i].dataNasc.mes, &p[i].dataNasc.ano, p[i].email, p[i].fone);
+            fscanf(arquivo_profissional, IN_PROFISSIONAL_FORMAT, &p[i].matricula, p[i].cpf, p[i].nome, &p[i].codProf, p[i].tipo, &p[i].numRegP,
+            &p[i].dataNasc.dia, &p[i].dataNasc.mes, &p[i].dataNasc.ano, p[i].email, p[i].fone);
             if(p[i].matricula == 0)
             {
                 i--;
@@ -1781,7 +1914,7 @@ void alocarRegistroProfissional(Profissional* p)
     do
     {
         fscanf(arquivo_profissional, IN_PROFISSIONAL_FORMAT, &p[tamVetProfissional].matricula, p[tamVetProfissional].cpf, p[tamVetProfissional].nome,
-            &p[tamVetProfissional].codProf, &p[tamVetProfissional].numRegP, &p[tamVetProfissional].dataNasc.dia,
+            &p[tamVetProfissional].codProf, p[tamVetProfissional].tipo, &p[tamVetProfissional].numRegP, &p[tamVetProfissional].dataNasc.dia,
             &p[tamVetProfissional].dataNasc.mes, &p[tamVetProfissional].dataNasc.ano, p[tamVetProfissional].email, p[tamVetProfissional].fone);
 
         if(p[tamVetProfissional].matricula == 0)
@@ -1801,7 +1934,7 @@ void registrarProfissional(Profissional *p)
     fseek(arquivo_profissional, 0, SEEK_END);
     if (p->matricula)
     {
-        fprintf(arquivo_profissional, OUT_PROFISSIONAL_FORMAT, p->matricula, p->cpf, p->nome, p->codProf, p->numRegP, p->dataNasc.dia,
+        fprintf(arquivo_profissional, OUT_PROFISSIONAL_FORMAT, p->matricula, p->cpf, p->nome, p->codProf, p->tipo, p->numRegP, p->dataNasc.dia,
             p->dataNasc.mes, p->dataNasc.ano, p->email, p->fone);
     }
     fseek(arquivo_profissional, 0, SEEK_SET);
@@ -1899,9 +2032,7 @@ void atualizarRegistroCliente(Cliente* c)
         {
             registrarCliente(&c[i]);
         }
-
     }
-
     fclose(arquivo_cliente);
     abrirArquivo(&arquivo_cliente, "regCliente.txt", ARQUIVO_MODO_LER);
 }
@@ -1909,7 +2040,7 @@ void atualizarRegistroCliente(Cliente* c)
 Profissional getProfissional(Profissional* p, int matricula)
 {
     int i;
-    
+
     for (i = 0; i < tamVetProfissional; i++)
     {
         if (matricula == p[i].matricula)
@@ -1925,12 +2056,11 @@ Profissional getProfissional(Profissional* p, int matricula)
 Cliente getCliente(Cliente* c, int codigo)
 {
     int i;
-    
+
     for (i = 0; i < tamVetCliente; i++)
     {
         if (codigo == c[i].codigo)
         {
-            printf("\n>>>Cliente: %s >", c[i].nome);
             return c[i];
         }
     }
